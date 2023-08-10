@@ -1,0 +1,3 @@
+free-ticket:
+  every: 86400
+  amount: 1

@@ -1,0 +1,4 @@
+name: PhoBan
+version: '${project.version}'
+main: dev.anhcraft.phoban.PhoBan
+api-version: '1.16'

@@ -1,0 +1,63 @@
+name: "&eGod Skeleton"
+description:
+  available:
+    - "&eGod Skeleton là con boss cực mạnh."
+    - ""
+    - "&eYou have played this level {playTimes} times"
+    - "&eYour best complete time was {bestCompleteTime}"
+    - ""
+    - "&eTh:"
+    - " ▪ Players: {currentPlayers}/{maxPlayers}"
+    - " ▪ Status: {status}"
+    - " ▪ Time Left: {timeLeft}"
+    - ""
+    - "&e> Click to join"
+  waiting:
+    - "&eGod Skeleton là con boss cực mạnh."
+    - ""
+    - "&eYou have played this level {playTimes} times"
+    - "&eYour best complete time was {bestCompleteTime}"
+    - ""
+    - "&eTh:"
+    - " ▪ Players: {currentPlayers}/{maxPlayers}"
+    - " ▪ Status: {status}"
+    - " ▪ Time Left: {timeLeft}"
+    - ""
+    - "&e> Click to join"
+  playing:
+    - "&fThis is example description for"
+    - "&fthe very first level."
+    - ""
+    - "&eYou have played this level {playTimes} times"
+    - "&eYour best complete time was {bestCompleteTime}"
+    - ""
+    - "&eCurrent room:"
+    - " ▪ Players: {currentPlayers}/{maxPlayers}"
+    - " ▪ Status: {status}"
+    - " ▪ Time Left: {timeLeft}"
+    - ""
+    - "&eYou can't join now."
+settings:
+  max-players: 5
+  min-players: 1
+  waiting-time: 30
+  preparing-time: 10
+  intermission-time: 10
+  spawn-location: world 0 128 0
+  final-rewards:
+    - eco give {player} 20000
+rounds:
+  "1":
+    location: world 100 128 100
+    mobs:
+      - 5 zombie at world 100 128 100
+    rewards:
+      - eco give {player} 1000
+  "2":
+    start-delay: 60
+    location: world 100 128 100
+    mobs:
+      - 10 zombie at world 100 128 100
+      - 7 spider at world 100 128 100
+    rewards:
+      - eco give {player} 3000
