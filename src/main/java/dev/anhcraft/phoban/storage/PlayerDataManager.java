@@ -1,9 +1,9 @@
-package dev.anhcraft.phoban.storage.player;
+package dev.anhcraft.phoban.storage;
 
 import com.google.common.base.Preconditions;
-import dev.anhcraft.vanhen.VanHen;
-import dev.anhcraft.vanhen.util.CompressUtils;
-import dev.anhcraft.vanhen.util.ConfigHelper;
+import dev.anhcraft.phoban.PhoBan;
+import dev.anhcraft.phoban.util.CompressUtils;
+import dev.anhcraft.phoban.util.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -25,14 +25,14 @@ import java.util.function.BiConsumer;
 
 public class PlayerDataManager implements Listener {
     private final static long EXPIRATION_TIME = Duration.ofMinutes(5).toMillis();
-    private final VanHen plugin;
+    private final PhoBan plugin;
     private final Map<UUID, TrackedPlayerData> playerDataMap = new HashMap<>();
     private final Object LOCK = new Object();
     private final File folder;
 
-    public PlayerDataManager(VanHen plugin) {
+    public PlayerDataManager(PhoBan plugin) {
         this.plugin = plugin;
-        folder = new File(plugin.getDataFolder(), "data/players");
+        folder = new File(plugin.getDataFolder(), "data");
         folder.mkdirs();
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -64,7 +64,7 @@ public class PlayerDataManager implements Listener {
             if (conf == null)
                 return new PlayerData();
 
-            return (PlayerData) ConfigHelper.load(PlayerData.class, conf);
+            return ConfigHelper.load(PlayerData.class, conf);
         } else {
             // If data not exists, don't create file (it is unneeded)
             return new PlayerData();
@@ -168,6 +168,10 @@ public class PlayerDataManager implements Listener {
                 Map.Entry<UUID, TrackedPlayerData> entry = it.next();
                 PlayerData playerData = entry.getValue().getPlayerData();
                 boolean toRemove = entry.getValue().isShortTerm() && System.currentTimeMillis() - entry.getValue().getLoadTime() > EXPIRATION_TIME;
+
+                if (toRemove)
+                    playerData.markDirty();
+
                 saveDataIfDirty(entry.getKey(), playerData);
 
                 if (toRemove) {

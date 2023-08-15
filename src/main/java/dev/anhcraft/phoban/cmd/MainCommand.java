@@ -2,20 +2,16 @@ package dev.anhcraft.phoban.cmd;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
-import co.aikar.commands.annotation.CatchUnknown;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.HelpCommand;
-import dev.anhcraft.mailbox.Mailbox;
-import dev.anhcraft.mailbox.gui.GuiRegistry;
+import co.aikar.commands.annotation.*;
+import dev.anhcraft.phoban.PhoBan;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandAlias("m|mail|mailbox")
+@CommandAlias("pb|phoban")
 public class MainCommand extends BaseCommand {
-    private final Mailbox plugin;
+    private final PhoBan plugin;
 
-    public MainCommand(Mailbox plugin) {
+    public MainCommand(PhoBan plugin) {
         this.plugin = plugin;
     }
 
@@ -27,6 +23,17 @@ public class MainCommand extends BaseCommand {
 
     @Default
     public void openMenu(Player player) {
-        GuiRegistry.openInboxGui(player);
+
+    }
+
+    @Subcommand("list")
+    @CommandPermission("phoban.list")
+    public void list(CommandSender sender) {
+
+    }
+
+    @Subcommand("quit")
+    public void quit(Player player) {
+        plugin.gameManager.attemptLeaveRoom(player);
     }
 }

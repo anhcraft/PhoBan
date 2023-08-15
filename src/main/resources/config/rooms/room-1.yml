@@ -1,63 +1,46 @@
 name: "&eGod Skeleton"
+icon: bone
 description:
-  available:
-    - "&eGod Skeleton là con boss cực mạnh."
-    - ""
-    - "&eYou have played this level {playTimes} times"
-    - "&eYour best complete time was {bestCompleteTime}"
-    - ""
-    - "&eTh:"
-    - " ▪ Players: {currentPlayers}/{maxPlayers}"
-    - " ▪ Status: {status}"
-    - " ▪ Time Left: {timeLeft}"
-    - ""
-    - "&e> Click to join"
-  waiting:
-    - "&eGod Skeleton là con boss cực mạnh."
-    - ""
-    - "&eYou have played this level {playTimes} times"
-    - "&eYour best complete time was {bestCompleteTime}"
-    - ""
-    - "&eTh:"
-    - " ▪ Players: {currentPlayers}/{maxPlayers}"
-    - " ▪ Status: {status}"
-    - " ▪ Time Left: {timeLeft}"
-    - ""
-    - "&e> Click to join"
-  playing:
-    - "&fThis is example description for"
-    - "&fthe very first level."
-    - ""
-    - "&eYou have played this level {playTimes} times"
-    - "&eYour best complete time was {bestCompleteTime}"
-    - ""
-    - "&eCurrent room:"
-    - " ▪ Players: {currentPlayers}/{maxPlayers}"
-    - " ▪ Status: {status}"
-    - " ▪ Time Left: {timeLeft}"
-    - ""
-    - "&eYou can't join now."
-settings:
-  max-players: 5
-  min-players: 1
-  waiting-time: 30
-  preparing-time: 10
-  intermission-time: 10
-  spawn-location: world 0 128 0
-  final-rewards:
-    - eco give {player} 20000
-rounds:
-  "1":
-    location: world 100 128 100
+  - "&7God Skeleton là con boss cực mạnh."
+spawn-location: world 0 128 0
+region: "room1"
+levels:
+  easy:
+    min-players: 1
+    max-players: 5
+    preparing-time: 10
+    playing-time: 1800
+    respawn-chances: 3
+    boss: "god-skeleton:1"
     mobs:
-      - 5 zombie at world 100 128 100
-    rewards:
-      - eco give {player} 1000
-  "2":
-    start-delay: 60
-    location: world 100 128 100
+      - zombie @amount=3 @every=10 @delay=10
+      - zombie world 0 128 0 @amount=10
+      - godSkeletonMinion world 0 128 0 @delay=300
+    win-rewards:
+      - eco give {player} 10000
+  medium:
+    min-players: 1
+    max-players: 5
+    preparing-time: 10
+    playing-time: 1400
+    respawn-chances: 2
+    boss: "god-skeleton:2"
     mobs:
-      - 10 zombie at world 100 128 100
-      - 7 spider at world 100 128 100
-    rewards:
-      - eco give {player} 3000
+      - zombie @amount=5 @every=10 @delay=10
+      - zombie world 0 128 0 @amount=15
+      - godSkeletonMinion world 0 128 0 @delay=300
+    win-rewards:
+      - eco give {player} 20000
+  hard:
+    min-players: 1
+    max-players: 3
+    preparing-time: 5
+    playing-time: 1200
+    respawn-chances: 1
+    boss: "god-skeleton:3"
+    mobs:
+      - zombie @amount=5 @every=5 @delay=10
+      - zombie world 0 128 0 @amount=30
+      - godSkeletonMinion world 0 128 0 @delay=300
+    win-rewards:
+      - eco give {player} 30000

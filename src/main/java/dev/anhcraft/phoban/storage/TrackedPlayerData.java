@@ -1,4 +1,4 @@
-package dev.anhcraft.phoban.storage.player;
+package dev.anhcraft.phoban.storage;
 
 import org.jetbrains.annotations.NotNull;
 

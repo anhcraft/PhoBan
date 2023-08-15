@@ -1,1 +1,17 @@
 prefix: "&e[PhoBan] &f"
+stage:
+  available: "&aPhòng trống"
+  waiting: "&eĐang chờ"
+  playing: "&bĐang chơi"
+  ending: "&6Sắp kết thúc"
+difficulty:
+  easy: "&aDễ"
+  medium: "&eTrung Bình"
+  hard: "&cKhó"
+already-joined: "&cBạn đã tham gia phó bản!"
+not-joined: "&cBạn chưa tham gia phó bản!"
+join-message: "&a&l[+] &f{player} ({currentPlayers}/{maxPlayers})"
+leave-message: "&c&l[-] &f{player} ({currentPlayers}/{maxPlayers})"
+waiting-cooldown: "&ePhó bản sẽ bắt đầu sau {cooldown}s"
+game-started: "&a&lPhó bản bắt đầu!"
+ending-cooldown: "&ePhó bản sẽ kết thúc sau {cooldown}s"

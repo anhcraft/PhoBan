@@ -1,3 +1,9 @@
 free-ticket:
-  every: 86400
   amount: 1
+  every: 86400
+room-settings:
+  waiting-time: 30
+  intermission-time: 10
+  respawn-time: 10
+spawn-location: world 0 128 0
+debug-level: 0

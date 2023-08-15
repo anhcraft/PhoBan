@@ -1,0 +1,33 @@
+title: "&0&lChọn độ khó"
+layout:
+  - "---------"
+  - "---xxx---"
+  - "----q----"
+components:
+  "-":
+    material: BLACK_STAINED_GLASS_PANE
+    name: "&a"
+  "x":
+    type: difficulty
+    material: BLACK_STAINED_GLASS_PANE
+    name: "&a"
+  "q":
+    type: quit
+    material: barrier
+    name: "&eQuay về"
+    lore:
+      - ""
+      - "&fQuay về menu chính"
+
+room-lore-trailer:
+  - ""
+  - "&eThông tin:"
+  - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
+  - "&7 ▪ Trạng thái: {stage}"
+  - "&7 ▪ Độ khó: {difficulty}"
+  - ""
+  - "&eLịch sử:"
+  - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
+  - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
+  - ""
+  - "&e> Nhấn để tham gia"
