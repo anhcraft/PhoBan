@@ -5,8 +5,8 @@ import dev.anhcraft.config.annotations.Validation;
 import dev.anhcraft.phoban.game.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +25,10 @@ public class RoomConfig {
     @Validation(notNull = true)
     private Location spawnLocation;
 
+    @Validation(notNull = true)
+    private Location queueLocation;
+
+    @Validation(notNull = true)
     private String region;
 
     @Validation(notNull = true)
@@ -50,7 +54,17 @@ public class RoomConfig {
         return spawnLocation;
     }
 
-    @Nullable
+    @NotNull
+    public Location getQueueLocation() {
+        return queueLocation;
+    }
+
+    @NotNull
+    public World getWorld() {
+        return spawnLocation.getWorld();
+    }
+
+    @NotNull
     public String getRegion() {
         return region;
     }

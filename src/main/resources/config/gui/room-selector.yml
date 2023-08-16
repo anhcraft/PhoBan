@@ -48,6 +48,7 @@ room-lore-trailer:
     - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
     - "&7 ▪ Kết quả tốt nhất: &f{bestCompleteTime}"
     - ""
+    - "&c[ Phó bản đã bắt đầu ]"
   ending:
     - ""
     - "&eThông tin:"
@@ -60,3 +61,4 @@ room-lore-trailer:
     - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
     - "&7 ▪ Kết quả tốt nhất: &f{bestCompleteTime}"
     - ""
+    - "&c[ Phó bản đã bắt đầu ]"

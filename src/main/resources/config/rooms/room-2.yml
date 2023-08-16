@@ -1,83 +1,50 @@
-name: "&eDead Spider"
-icon: spider_eye
+name: "&aAngry Sludge"
+icon: slime_ball
 description:
-  available:
-    - "&7Dead Spider là con boss cực mạnh."
-    - ""
-    - "&eThông tin:"
-    - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
-    - "&7 ▪ Trạng thái: {status}"
-    - ""
-    - "&eLịch sử:"
-    - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
-    - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
-    - ""
-    - "&e> Nhấn để tham gia"
-  waiting:
-    - "&7Dead Spider là con boss cực mạnh."
-    - ""
-    - "&eThông tin:"
-    - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
-    - "&7 ▪ Trạng thái: {status}"
-    - "&7 ▪ Độ khó: {difficulty}"
-    - ""
-    - "&eLịch sử:"
-    - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
-    - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
-    - ""
-    - "&e> Nhấn để tham gia"
-  playing:
-    - "&7Dead Spider là con boss cực mạnh."
-    - ""
-    - "&eThông tin:"
-    - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
-    - "&7 ▪ Trạng thái: {status}"
-    - "&7 ▪ Độ khó: {difficulty}"
-    - "&7 ▪ Thời gian còn lại: &f{timeLeft}"
-    - ""
-    - "&eLịch sử:"
-    - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
-    - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
-    - ""
+  - "&7Angry Sludge là con boss cực mạnh."
 spawn-location: world 0 128 0
-region: "room1"
+queue-location: world 0 128 0
+region: "room2"
 levels:
   easy:
     min-players: 1
     max-players: 5
-    preparing-time: 10
     playing-time: 1800
+    respawn-time: 10
     respawn-chances: 3
-    boss: "god-skeleton:1"
+    boss-id: "AngrySludge"
     mobs:
       - zombie @amount=3 @every=10 @delay=10
       - zombie world 0 128 0 @amount=10
-      - godSkeletonMinion world 0 128 0 @delay=300
+      - AngrySludge world 0 128 0 @delay=10
+      - StaticallyChargedSheep world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 10000
   medium:
     min-players: 1
     max-players: 5
-    preparing-time: 10
     playing-time: 1400
+    respawn-time: 10
     respawn-chances: 2
-    boss: "god-skeleton:2"
+    boss-id: "AngrySludge"
     mobs:
       - zombie @amount=5 @every=10 @delay=10
       - zombie world 0 128 0 @amount=15
-      - godSkeletonMinion world 0 128 0 @delay=300
+      - AngrySludge:1 world 0 128 0 @delay=10
+      - StaticallyChargedSheep:1 world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 20000
   hard:
-    min-players: 1
+    min-players: 2
     max-players: 3
-    preparing-time: 5
     playing-time: 1200
+    respawn-time: 20
     respawn-chances: 1
-    boss: "god-skeleton:3"
+    boss-id: "AngrySludge"
     mobs:
       - zombie @amount=5 @every=5 @delay=10
       - zombie world 0 128 0 @amount=30
-      - godSkeletonMinion world 0 128 0 @delay=300
+      - AngrySludge:2 world 0 128 0 @delay=10
+      - StaticallyChargedSheep:2 world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 30000

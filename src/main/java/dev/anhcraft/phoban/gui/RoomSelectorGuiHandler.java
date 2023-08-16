@@ -24,6 +24,7 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
     @Override
     public void onPreOpen(@NotNull Player player) {
         playerData = PhoBan.instance.playerDataManager.getData(player);
+        refresh(player);
     }
 
     @Override

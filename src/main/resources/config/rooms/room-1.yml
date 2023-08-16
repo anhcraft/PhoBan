@@ -1,46 +1,50 @@
-name: "&eGod Skeleton"
+name: "&aGod Skeleton"
 icon: bone
 description:
   - "&7God Skeleton là con boss cực mạnh."
 spawn-location: world 0 128 0
+queue-location: world 0 128 0
 region: "room1"
 levels:
   easy:
     min-players: 1
     max-players: 5
-    preparing-time: 10
     playing-time: 1800
+    respawn-time: 10
     respawn-chances: 3
-    boss: "god-skeleton:1"
+    boss-id: "SkeletonKing"
     mobs:
-      - zombie @amount=3 @every=10 @delay=10
-      - zombie world 0 128 0 @amount=10
-      - godSkeletonMinion world 0 128 0 @delay=300
+      - zombie @amount=3 @every=10 @delay=3
+      - zombie world 0 128 0 @amount=5
+      - SkeletonKing world 0 128 0 @delay=10111111
+      - SkeletalMinion world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 10000
   medium:
     min-players: 1
     max-players: 5
-    preparing-time: 10
     playing-time: 1400
+    respawn-time: 10
     respawn-chances: 2
-    boss: "god-skeleton:2"
+    boss-id: "SkeletonKing"
     mobs:
-      - zombie @amount=5 @every=10 @delay=10
-      - zombie world 0 128 0 @amount=15
-      - godSkeletonMinion world 0 128 0 @delay=300
+      - zombie @amount=3 @every=10 @delay=3
+      - zombie world 0 128 0 @amount=10
+      - SkeletonKing:1 world 0 128 0 @delay=10
+      - SkeletalMinion:1 world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 20000
   hard:
-    min-players: 1
+    min-players: 2
     max-players: 3
-    preparing-time: 5
     playing-time: 1200
+    respawn-time: 20
     respawn-chances: 1
-    boss: "god-skeleton:3"
+    boss-id: "SkeletonKing"
     mobs:
-      - zombie @amount=5 @every=5 @delay=10
-      - zombie world 0 128 0 @amount=30
-      - godSkeletonMinion world 0 128 0 @delay=300
+      - zombie @amount=3 @every=10 @delay=3
+      - zombie world 0 128 0 @amount=15
+      - SkeletonKing:2 world 0 128 0 @delay=10
+      - SkeletalMinion:2 world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 30000

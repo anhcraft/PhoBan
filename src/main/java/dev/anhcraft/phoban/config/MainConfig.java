@@ -24,8 +24,6 @@ public class MainConfig {
         public int waitingTime;
 
         public int intermissionTime;
-
-        public int respawnTime;
     }
 
     @Validation(notNull = true)

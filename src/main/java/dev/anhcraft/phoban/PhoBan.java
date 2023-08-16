@@ -10,7 +10,9 @@ import dev.anhcraft.palette.listener.GuiEventListener;
 import dev.anhcraft.phoban.cmd.MainCommand;
 import dev.anhcraft.phoban.config.MainConfig;
 import dev.anhcraft.phoban.config.MessageConfig;
-import dev.anhcraft.phoban.game.GameListener;
+import dev.anhcraft.phoban.game.Room;
+import dev.anhcraft.phoban.integration.PlaceholderBridge;
+import dev.anhcraft.phoban.listener.GameListener;
 import dev.anhcraft.phoban.game.GameManager;
 import dev.anhcraft.phoban.gui.DifficultySelectorGui;
 import dev.anhcraft.phoban.gui.GuiRefreshTask;
@@ -40,6 +42,7 @@ public final class PhoBan extends JavaPlugin {
         instance = this;
         playerDataManager = new PlayerDataManager(this);
         gameManager = new GameManager(this);
+        new PlaceholderBridge(this);
 
         reload();
 
@@ -50,7 +53,8 @@ public final class PhoBan extends JavaPlugin {
         pcm.enableUnstableAPI("help");
         pcm.registerCommand(new MainCommand(this));
         CommandCompletions<BukkitCommandCompletionContext> cmpl = pcm.getCommandCompletions();
-        //cmpl.registerAsyncCompletion("ores", context -> API.getOres());
+        cmpl.registerAsyncCompletion("room", context -> gameManager.getRoomIds());
+        cmpl.registerAsyncCompletion("activeRoom", context -> gameManager.getActiveRoomIds());
     }
 
     public void debug(@NotNull String format, @NotNull Object... args) {
@@ -79,10 +83,16 @@ public final class PhoBan extends JavaPlugin {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', str));
     }
 
+    public void sync(Runnable runnable) {
+        getServer().getScheduler().runTask(this, runnable);
+    }
+
     @Override
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
-
+        for (Room room : gameManager.getActiveRooms()) {
+            room.syncTerminate();
+        }
         playerDataManager.terminate();
     }
 
@@ -100,7 +110,7 @@ public final class PhoBan extends JavaPlugin {
         playerDataManager.reload();
         gameManager.reload();
 
-        new GuiRefreshTask().runTaskTimer(this, 0L, 10L);
+        new GuiRefreshTask().runTaskTimer(this, 0L, 20L);
         new GameTickingTask().runTaskTimerAsynchronously(this, 0L, 20L);
     }
 

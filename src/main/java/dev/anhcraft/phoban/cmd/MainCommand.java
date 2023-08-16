@@ -4,6 +4,12 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import dev.anhcraft.phoban.PhoBan;
+import dev.anhcraft.phoban.gui.GuiRegistry;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,17 +29,55 @@ public class MainCommand extends BaseCommand {
 
     @Default
     public void openMenu(Player player) {
-
-    }
-
-    @Subcommand("list")
-    @CommandPermission("phoban.list")
-    public void list(CommandSender sender) {
-
+        GuiRegistry.openRoomSelector(player);
     }
 
     @Subcommand("quit")
     public void quit(Player player) {
         plugin.gameManager.attemptLeaveRoom(player);
+    }
+
+    @Subcommand("reload")
+    @CommandPermission("phoban.reload")
+    public void reload(CommandSender sender) {
+        plugin.reload();
+        sender.sendMessage(ChatColor.GREEN + "Reloaded the plugin!");
+    }
+
+    @Subcommand("list")
+    @CommandPermission("phoban.list")
+    public void list(CommandSender sender) {
+        sender.sendMessage(ChatColor.GOLD + "All: " + String.join(",", plugin.gameManager.getRoomIds()));
+        sender.sendMessage(ChatColor.GREEN + "Active: " + String.join(",", plugin.gameManager.getActiveRoomIds()));
+    }
+
+    @Subcommand("terminate")
+    @CommandPermission("phoban.terminate")
+    @CommandCompletion("@activeRoom")
+    public void terminate(CommandSender sender, String room) {
+        plugin.gameManager.tryTerminate(room);
+        sender.sendMessage(ChatColor.GREEN + "Terminated " + room);
+    }
+
+    @Subcommand("getpos")
+    @CommandPermission("phoban.getpos")
+    public void getpos(Player p) {
+        var loc = p.getLocation();
+        var locString = String.join(" ",
+                loc.getWorld().getName(),
+                Integer.toString(loc.getBlockX()),
+                Integer.toString(loc.getBlockY()),
+                Integer.toString(loc.getBlockZ()),
+                Integer.toString(Math.round(loc.getYaw())),
+                Integer.toString(Math.round(loc.getPitch())));
+
+        var text = new ComponentBuilder("Your location is ").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append(locString).color(net.md_5.bungee.api.ChatColor.BLUE).underlined(true)
+                .event(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, locString))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Yes click here")))
+                .append(" (click the underlined text to copy)").reset().color(net.md_5.bungee.api.ChatColor.GRAY).italic(true)
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("NO NOT THIS TEXT!!1!")))
+                .create();
+        p.spigot().sendMessage(text);
     }
 }

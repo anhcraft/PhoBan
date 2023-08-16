@@ -4,7 +4,9 @@ import dev.anhcraft.config.bukkit.utils.ItemBuilder;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.game.Difficulty;
 import dev.anhcraft.phoban.game.Stage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -12,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Placeholder {
-    public static final Pattern INFO_PLACEHOLDER_PATTERN = Pattern.compile("<[a-zA-Z0-9:_]+>");
+    public static final Pattern INFO_PLACEHOLDER_PATTERN = Pattern.compile("\\{[a-zA-Z0-9-_]+}");
 
     public static Placeholder create() {
         return new Placeholder();
@@ -26,10 +28,7 @@ public class Placeholder {
     }
 
     public Placeholder addTime(String key, long timeSec) {
-        long hours = timeSec / 3600;
-        long minutes = (timeSec % 3600) / 60;
-        long seconds = timeSec % 60;
-        placeholders.put(key, String.format("%02d:%02d:%02d", hours, minutes, seconds));
+        placeholders.put(key, TimeUtils.format(timeSec));
         return this;
     }
 
@@ -40,18 +39,22 @@ public class Placeholder {
         while (m.find()) {
             String p = m.group();
             String s = p.substring(1, p.length() - 1).trim();
-            m.appendReplacement(sb, s);
+            m.appendReplacement(sb, placeholders.get(s));
         }
         m.appendTail(sb);
         return sb.toString();
     }
 
-    public void message(Player player, String str) {
-        PhoBan.instance.msg(player, replace(str));
+    public void message(CommandSender sender, String str) {
+        PhoBan.instance.msg(sender, replace(str));
     }
 
-    public void messageRaw(Player player, String str) {
-        PhoBan.instance.rawMsg(player, replace(str));
+    public void actionBar(Player player, String str) {
+        player.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(replace(str)));
+    }
+
+    public void messageRaw(CommandSender sender, String str) {
+        PhoBan.instance.rawMsg(sender, replace(str));
     }
 
     public ItemBuilder replace(ItemBuilder itemBuilder) {

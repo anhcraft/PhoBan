@@ -4,4 +4,5 @@ main: dev.anhcraft.phoban.PhoBan
 api-version: '1.16'
 depend:
   - PlaceholderAPI
-  - MythicMob
+  - MythicMobs
+  - WorldGuard

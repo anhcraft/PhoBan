@@ -12,6 +12,7 @@ import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.Placeholder;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -29,6 +30,15 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
     @Override
     public void onPreOpen(@NotNull Player player) {
         playerData = PhoBan.instance.playerDataManager.getData(player);
+
+        listen("quit", new ClickEvent() {
+            @Override
+            public void onClick(@NotNull InventoryClickEvent clickEvent, @NotNull Player player, int slot) {
+                GuiRegistry.openRoomSelector(player);
+            }
+        });
+
+        refresh(player);
     }
 
     @Override

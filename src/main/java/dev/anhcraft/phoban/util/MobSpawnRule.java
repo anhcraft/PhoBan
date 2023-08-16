@@ -26,7 +26,7 @@ public record MobSpawnRule(@NotNull String type, int amount, @Nullable Location 
         String[] mainArgs = parts[0].trim().split("\\s+");
         Location location = null;
 
-        if (mainArgs.length == 5) {
+        if (mainArgs.length >= 5) {
             location = new Location(
                     Bukkit.getWorld(mainArgs[1]),
                     Double.parseDouble(mainArgs[2]),
@@ -48,7 +48,7 @@ public record MobSpawnRule(@NotNull String type, int amount, @Nullable Location 
 
     @Nullable
     public EntityType getVanillaType() {
-        return (EntityType) EnumUtil.findEnum(EntityType.class, type);
+        return (EntityType) EnumUtil.findEnum(EntityType.class, type.toUpperCase());
     }
 
     @NotNull
