@@ -13,11 +13,18 @@ components:
     material: BLACK_STAINED_GLASS_PANE
     name: "&a"
 
+room-locked-trailer:
+  - ""
+  - "&eThông tin:"
+  - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
+  - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}&7 trở lên"
+  - ""
+
 room-lore-trailer:
   available:
     - ""
     - "&eThông tin:"
-    - "&7 ▪ Phòng trống chưa bắt đầu!"
+    - "&a&l ✔&7 Phòng trống chưa bắt đầu"
     - ""
     - "&eLịch sử:"
     - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"

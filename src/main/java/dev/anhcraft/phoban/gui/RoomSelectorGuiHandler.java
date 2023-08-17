@@ -46,12 +46,37 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
 
             String roomId = roomIds.get(i);
             RoomConfig roomConfig = PhoBan.instance.gameManager.getRoomConfig(roomId);
-            if (roomConfig == null) continue;
+
+            if (roomConfig == null) {
+                resetItem(slot);
+                getSlot(slot).clearEvents();
+                continue;
+            }
+
+            if (roomConfig.getRoomRequirement() != null && !playerData.hasPlayedRoom(roomConfig.getRoomRequirement())) {
+                RoomConfig required = PhoBan.instance.gameManager.getRoomConfig(roomConfig.getRoomRequirement().name());
+                if (required == null) {
+                    resetItem(slot);
+                } else {
+                    replaceItem(slot, (index, itemBuilder) -> {
+                        itemBuilder.material(roomConfig.getIcon());
+                        itemBuilder.name(roomConfig.getName());
+                        itemBuilder.lore(roomConfig.getDescription());
+                        itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLockedTrailer);
+                        return Placeholder.create()
+                                .add("requiredRoom", required.getName())
+                                .add("requiredDifficulty", roomConfig.getRoomRequirement().minimumDifficulty())
+                                .replace(itemBuilder);
+                    });
+                }
+                getSlot(slot).clearEvents();
+                continue;
+            }
+
             Room room = PhoBan.instance.gameManager.getRoom(roomId);
             Stage stage = room == null ? Stage.AVAILABLE : room.getStage();
             GameHistory history = playerData.getGameHistory(roomId);
-            Placeholder placeholder = Placeholder.create()
-                    .add("stage", stage);
+            Placeholder placeholder = Placeholder.create().add("stage", stage);
 
             if (room != null) {
                 Difficulty difficulty = room.getDifficulty();
@@ -63,6 +88,20 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                         .add("maxPlayers", levelConfig.getMaxPlayers())
                         .add("difficulty", room.getDifficulty())
                         .addTime("timeLeft", room.getTimeLeft());
+
+                if (difficulty.ordinal() > 0 && !playerData.hasPlayedRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
+                    placeholder.add("requiredRoom", roomConfig.getName())
+                            .add("requiredDifficulty", Difficulty.values()[difficulty.ordinal()-1]);
+                    replaceItem(slot, (index, itemBuilder) -> {
+                        itemBuilder.material(roomConfig.getIcon());
+                        itemBuilder.name(roomConfig.getName());
+                        itemBuilder.lore(roomConfig.getDescription());
+                        itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLockedTrailer);
+                        return placeholder.replace(itemBuilder);
+                    });
+                    getSlot(slot).clearEvents();
+                    continue;
+                }
             } else {
                 placeholder.add("playTimes", history == null ? 0 : history.getTotalPlayTimes())
                         .addTime("bestCompleteTime", history == null ? 0 : history.getBestCompleteOfAllTime());

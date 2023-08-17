@@ -21,7 +21,6 @@ public class GameListener implements Listener {
     @EventHandler
     private void join(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        player.setGameMode(GameMode.SURVIVAL);
         plugin.gameManager.rejoinRoom(player);
     }
 

@@ -32,9 +32,11 @@ public class GameHistory {
         return bestCompleteTime.values().stream().mapToLong(Long::longValue).max().orElse(0L);
     }
 
-    public void increasePlayTime(Difficulty difficulty) {
-        playTimes.put(difficulty, getPlayTimes(difficulty) + 1);
+    public int increasePlayTime(Difficulty difficulty) {
+        int newPlayTime = getPlayTimes(difficulty) + 1;
+        playTimes.put(difficulty, newPlayTime);
         dirty.set(true);
+        return newPlayTime;
     }
 
     public void addCompleteTime(Difficulty difficulty, long time) {

@@ -10,4 +10,6 @@ import java.util.Map;
 @Configurable(keyNamingStyle = Configurable.NamingStyle.TRAIN_CASE)
 public class RoomSelectorGui extends Gui {
     public Map<Stage, List<String>> roomLoreTrailer;
+
+    public List<String> roomLockedTrailer;
 }

@@ -87,6 +87,10 @@ public final class PhoBan extends JavaPlugin {
         getServer().getScheduler().runTask(this, runnable);
     }
 
+    public void sync(Runnable runnable, int delay) {
+        getServer().getScheduler().runTaskLater(this, runnable, delay);
+    }
+
     @Override
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);

@@ -4,6 +4,7 @@ description:
   - "&7Angry Sludge là con boss cực mạnh."
 spawn-location: world 0 128 0
 queue-location: world 0 128 0
+requirement: "room1:easy"
 region: "room2"
 levels:
   easy:

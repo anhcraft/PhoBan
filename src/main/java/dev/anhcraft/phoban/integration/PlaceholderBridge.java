@@ -17,6 +17,7 @@ public class PlaceholderBridge extends PlaceholderExpansion {
     private static final String ROOM_MIN_PLAYERS = "room_min_players";
     private static final String ROOM_SEPARATORS = "room_separators";
     private static final String ROOM_RESPAWNS = "room_respawns";
+    private static final String ROOM_MAX_RESPAWNS = "room_max_respawns";
     private static final String ROOM_TIME = "room_time";
     private static final String ROOM_TIME_LEFT = "room_time_left";
     private final PhoBan plugin;
@@ -78,6 +79,9 @@ public class PlaceholderBridge extends PlaceholderExpansion {
         } else if(params.equals(ROOM_RESPAWNS)){
             Room r = plugin.gameManager.getRoom(player.getUniqueId());
             return r == null ? "" : String.valueOf(r.getRespawnChances().getOrDefault(player.getUniqueId(), 0));
+        } else if(params.equals(ROOM_MAX_RESPAWNS)){
+            Room r = plugin.gameManager.getRoom(player.getUniqueId());
+            return r == null ? "" : String.valueOf(r.getLevel().getRespawnChances());
         } else if(params.equals(ROOM_TIME)){
             Room r = plugin.gameManager.getRoom(player.getUniqueId());
             return r == null ? "" : TimeUtils.format(r.getTimeCounter());

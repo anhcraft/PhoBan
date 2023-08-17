@@ -20,6 +20,8 @@ levels:
       - SkeletalMinion world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 10000
+    first-win-rewards:
+      - eco give {player} 20000
   medium:
     min-players: 1
     max-players: 5
@@ -33,6 +35,8 @@ levels:
       - SkeletonKing:1 world 0 128 0 @delay=10
       - SkeletalMinion:1 world 0 128 0 @delay=10
     win-rewards:
+      - eco give {player} 20000
+    first-win-rewards:
       - eco give {player} 20000
   hard:
     min-players: 2
@@ -48,3 +52,5 @@ levels:
       - SkeletalMinion:2 world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 30000
+    first-win-rewards:
+      - eco give {player} 20000

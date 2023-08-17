@@ -8,4 +8,6 @@ import java.util.List;
 @Configurable(keyNamingStyle = Configurable.NamingStyle.TRAIN_CASE)
 public class DifficultySelectorGui extends Gui {
     public List<String> roomLoreTrailer;
+
+    public List<String> roomLockedTrailer;
 }

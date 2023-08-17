@@ -19,6 +19,13 @@ components:
       - ""
       - "&fQuay về menu chính"
 
+room-locked-trailer:
+  - ""
+  - "&eThông tin:"
+  - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
+  - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}"
+  - ""
+
 room-lore-trailer:
   - ""
   - "&eThông tin:"

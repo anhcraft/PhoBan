@@ -7,6 +7,7 @@ import dev.anhcraft.config.annotations.Validation;
 import dev.anhcraft.phoban.util.MobSpawnRule;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 @Configurable(keyNamingStyle = Configurable.NamingStyle.TRAIN_CASE)
@@ -20,11 +21,14 @@ public class LevelConfig {
     @Validation(notNull = true)
     private String bossId;
 
-    @Validation(notNull = true)
-    private List<String> mobs;
+    @Validation(notNull = true, silent = true)
+    private List<String> mobs = Collections.emptyList();
 
-    @Validation(notNull = true)
-    private List<String> winRewards;
+    @Validation(notNull = true, silent = true)
+    private List<String> winRewards = Collections.emptyList();
+
+    @Validation(notNull = true, silent = true)
+    private List<String> firstWinRewards = Collections.emptyList();
 
     @Exclude
     private List<MobSpawnRule> mobSpawnRules;
@@ -67,5 +71,10 @@ public class LevelConfig {
     @NotNull
     public List<String> getWinRewards() {
         return winRewards;
+    }
+
+    @NotNull
+    public List<String> getFirstWinRewards() {
+        return firstWinRewards;
     }
 }

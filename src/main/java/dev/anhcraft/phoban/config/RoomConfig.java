@@ -1,12 +1,16 @@
 package dev.anhcraft.phoban.config;
 
 import dev.anhcraft.config.annotations.Configurable;
+import dev.anhcraft.config.annotations.Exclude;
+import dev.anhcraft.config.annotations.PostHandler;
 import dev.anhcraft.config.annotations.Validation;
 import dev.anhcraft.phoban.game.Difficulty;
+import dev.anhcraft.phoban.game.RoomRequirement;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +22,8 @@ public class RoomConfig {
 
     @Validation(notNull = true)
     private Material icon;
+
+    private String requirement;
 
     @Validation(notNull = true)
     private List<String> description;
@@ -34,6 +40,14 @@ public class RoomConfig {
     @Validation(notNull = true)
     private Map<Difficulty, LevelConfig> levels;
 
+    @Exclude
+    private RoomRequirement roomRequirement;
+
+    @PostHandler
+    private void postHandler() {
+        roomRequirement = requirement == null ? null : RoomRequirement.parse(requirement);
+    }
+
     @NotNull
     public String getName() {
         return name;
@@ -47,6 +61,11 @@ public class RoomConfig {
     @NotNull
     public List<String> getDescription() {
         return description;
+    }
+
+    @Nullable
+    public RoomRequirement getRoomRequirement() {
+        return roomRequirement;
     }
 
     @NotNull

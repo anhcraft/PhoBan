@@ -1,9 +1,11 @@
 package dev.anhcraft.phoban.game;
 
+import dev.anhcraft.jvmkit.utils.RandomUtil;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.config.LevelConfig;
 import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.storage.GameHistory;
+import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.MobSpawnRule;
 import dev.anhcraft.phoban.util.Placeholder;
 import dev.anhcraft.phoban.util.WorldGuardUtils;
@@ -68,7 +70,7 @@ public class Room {
                     Player p = Bukkit.getPlayer(uuid);
                     if (p == null) continue;
                     placeholder.actionBar(p, plugin.messageConfig.waitingCooldown);
-                    p.playSound(p.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.5f);
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 0.5f);
                 }
 
                 if (remain == 0) {
@@ -100,20 +102,23 @@ public class Room {
             int remain = getTimeLeft();
             Placeholder placeholder = placeholder().add("cooldown", remain);
 
-            for (UUID uuid : players) {
-                Player p = Bukkit.getPlayer(uuid);
-                if (p == null) continue;
-                placeholder.actionBar(p, plugin.messageConfig.endingCooldown);
-                p.playSound(p.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.5f);
+            plugin.sync(() -> {
+                for (UUID uuid : players) {
+                    Player p = Bukkit.getPlayer(uuid);
+                    if (p == null) continue;
+                    placeholder.actionBar(p, plugin.messageConfig.endingCooldown);
 
-                plugin.sync(() -> {
                     Firework fw = (Firework) getConfig().getWorld().spawnEntity(p.getLocation(), EntityType.FIREWORK);
                     FireworkMeta fwm = fw.getFireworkMeta();
                     fwm.addEffect(FireworkEffect.builder().withColor(Color.RED).withFade(Color.WHITE).build());
                     fwm.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.WHITE).build());
                     fwm.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withFade(Color.WHITE).build());
-                });
-            }
+                    fwm.setPower(RandomUtil.randomInt(2, 5));
+                    fw.setFireworkMeta(fwm);
+
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 0.5f);
+                }
+            });
 
             if (remain == 0) {
                 plugin.sync(this::syncTerminate);
@@ -136,9 +141,13 @@ public class Room {
                 continue;
             }
 
+            if (p.getGameMode() != GameMode.SPECTATOR) {
+                p.setGameMode(GameMode.SPECTATOR);
+            }
+
             Placeholder placeholder = placeholder().add("cooldown", ent.getValue());
             placeholder.actionBar(p, plugin.messageConfig.respawnCooldown);
-            p.playSound(p.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.5f);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 0.5f);
 
             ent.setValue(ent.getValue() - 1);
         }
@@ -172,13 +181,13 @@ public class Room {
 
         for (UUID uuid : players) {
             Player p = Bukkit.getPlayer(uuid);
-            if (p == null) continue;
-            p.teleportAsync(getConfig().getQueueLocation());
+            if (p == null || completeTime < 1) continue;
 
-            if (completeTime < 1) continue;
+            PlayerData data = plugin.playerDataManager.getData(p);
+            data.addPlayedRoom(id, difficulty);
 
-            GameHistory gameHistory = plugin.playerDataManager.getData(p).requireRoomHistory(id);
-            gameHistory.increasePlayTime(difficulty);
+            GameHistory gameHistory = data.requireRoomHistory(id);
+            int newPlayTime = gameHistory.increasePlayTime(difficulty);
             gameHistory.addCompleteTime(difficulty, completeTime);
 
             Placeholder placeholder = placeholder().add("player", p).addTime("completeTime", completeTime);
@@ -187,11 +196,15 @@ public class Room {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
             }
 
+            if (newPlayTime == 1) {
+                for (String reward : getLevel().getFirstWinRewards()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
+                }
+            }
+
             for (String msg : plugin.messageConfig.endMessage) {
                 placeholder.messageRaw(p, msg);
             }
-
-            p.playSound(p.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.0f, 0.5f);
         }
     }
 
@@ -215,9 +228,21 @@ public class Room {
     boolean handleJoinRoom(Player player) {
         if (players.contains(player.getUniqueId())) {
             if (stage == Stage.WAITING) {
-                plugin.sync(() -> player.teleportAsync(getConfig().getQueueLocation()));
+                plugin.sync(() -> {
+                    player.teleportAsync(getConfig().getQueueLocation()).thenRun(() -> {
+                        plugin.sync(() -> player.setGameMode(GameMode.SURVIVAL), 30);
+                    });
+                });
             } else {
-                plugin.sync(() -> player.teleportAsync(getConfig().getSpawnLocation()));
+                plugin.sync(() -> {
+                    player.teleportAsync(getConfig().getSpawnLocation()).thenRun(() -> {
+                        if (separators.containsKey(player.getUniqueId())) {
+                            plugin.sync(() -> player.setGameMode(GameMode.SPECTATOR), 30);
+                        } else {
+                            plugin.sync(() -> player.setGameMode(GameMode.SURVIVAL), 30);
+                        }
+                    });
+                });
             }
             return true;
         }

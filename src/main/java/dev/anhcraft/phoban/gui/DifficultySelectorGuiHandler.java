@@ -69,6 +69,21 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 return;
             }
 
+            if (difficulty.ordinal() > 0 && !playerData.hasPlayedRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
+                Placeholder placeholder = Placeholder.create()
+                        .add("requiredRoom", roomConfig.getName())
+                        .add("requiredDifficulty", Difficulty.values()[difficulty.ordinal()-1]);
+                replaceItem(slot, (index, itemBuilder) -> {
+                    itemBuilder.material(roomConfig.getIcon());
+                    itemBuilder.name(roomConfig.getName());
+                    itemBuilder.lore(roomConfig.getDescription());
+                    itemBuilder.lore().addAll(GuiRegistry.DIFFICULTY_SELECTOR.roomLockedTrailer);
+                    return placeholder.replace(itemBuilder);
+                });
+                getSlot(slot).clearEvents();
+                continue;
+            }
+
             LevelConfig levelConfig = roomConfig.getLevel(difficulty);
             GameHistory history = playerData.getGameHistory(roomId);
             Placeholder placeholder = Placeholder.create()
