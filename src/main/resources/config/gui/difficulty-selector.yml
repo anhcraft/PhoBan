@@ -10,7 +10,7 @@ components:
   "x":
     type: difficulty
     material: BLACK_STAINED_GLASS_PANE
-    name: "&a"
+    name: "&a{dungeon} &7({difficulty}&7)"
   "q":
     type: quit
     material: barrier
@@ -35,6 +35,8 @@ room-lore-trailer:
   - ""
   - "&eLịch sử:"
   - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
+  - "&7 ▪ Thắng &f{wins}&7 trận &7({winRatio}%)"
   - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
   - ""
-  - "&e> Nhấn để tham gia"
+  - "&e> Nhấn để tạo phòng"
+  - "&7  Tiêu hao &c{ticketCost}&7 vé"

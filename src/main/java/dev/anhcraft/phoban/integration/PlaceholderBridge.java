@@ -2,9 +2,11 @@ package dev.anhcraft.phoban.integration;
 
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.game.Room;
+import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.util.TimeUtils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class PlaceholderBridge extends PlaceholderExpansion {
@@ -20,6 +22,10 @@ public class PlaceholderBridge extends PlaceholderExpansion {
     private static final String ROOM_MAX_RESPAWNS = "room_max_respawns";
     private static final String ROOM_TIME = "room_time";
     private static final String ROOM_TIME_LEFT = "room_time_left";
+    private static final String TICKETS = "tickets";
+    private static final String TOTAL_WINS = "total_wins";
+    private static final String TOTAL_LOSSES = "total_losses";
+    private static final String TOTAL_MATCHES = "total_matches";
     private final PhoBan plugin;
 
     public PlaceholderBridge(PhoBan plugin) {
@@ -49,45 +55,76 @@ public class PlaceholderBridge extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-        if (player == null)
+        if (!(player instanceof Player))
             return null;
 
-        if(params.equals(ROOM_NAME)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : r.getConfig().getName();
-        } else if(params.equals(ROOM_REGION)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : r.getConfig().getRegion();
-        } else if(params.equals(ROOM_STAGE)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : plugin.messageConfig.stage.get(r.getStage());
-        } else if(params.equals(ROOM_DIFFICULTY)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : plugin.messageConfig.difficulty.get(r.getDifficulty());
-        } else if(params.equals(ROOM_PLAYERS)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : String.valueOf(r.getPlayers().size());
-        } else if(params.equals(ROOM_MAX_PLAYERS)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : String.valueOf(r.getLevel().getMaxPlayers());
-        } else if(params.equals(ROOM_MIN_PLAYERS)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : String.valueOf(r.getLevel().getMinPlayers());
-        } else if(params.equals(ROOM_SEPARATORS)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : String.valueOf(r.getSeparators().size());
-        } else if(params.equals(ROOM_RESPAWNS)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : String.valueOf(r.getRespawnChances().getOrDefault(player.getUniqueId(), 0));
-        } else if(params.equals(ROOM_MAX_RESPAWNS)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : String.valueOf(r.getLevel().getRespawnChances());
-        } else if(params.equals(ROOM_TIME)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : TimeUtils.format(r.getTimeCounter());
-        } else if(params.equals(ROOM_TIME_LEFT)){
-            Room r = plugin.gameManager.getRoom(player.getUniqueId());
-            return r == null ? "" : TimeUtils.format(r.getTimeLeft());
+        switch (params) {
+            case ROOM_NAME -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : r.getConfig().getName();
+            }
+            case ROOM_REGION -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : r.getConfig().getRegion();
+            }
+            case ROOM_STAGE -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : plugin.messageConfig.stage.get(r.getStage());
+            }
+            case ROOM_DIFFICULTY -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : plugin.messageConfig.difficulty.get(r.getDifficulty());
+            }
+            case ROOM_PLAYERS -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getPlayers().size());
+            }
+            case ROOM_MAX_PLAYERS -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getLevel().getMaxPlayers());
+            }
+            case ROOM_MIN_PLAYERS -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getLevel().getMinPlayers());
+            }
+            case ROOM_SEPARATORS -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getSeparators().size());
+            }
+            case ROOM_RESPAWNS -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getRespawnChances().getOrDefault(player.getUniqueId(), 0));
+            }
+            case ROOM_MAX_RESPAWNS -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getLevel().getRespawnChances());
+            }
+            case ROOM_TIME -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : TimeUtils.format(r.getTimeCounter());
+            }
+            case ROOM_TIME_LEFT -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : TimeUtils.format(r.getTimeLeft());
+            }
+            case TICKETS -> {
+                return String.valueOf(plugin.playerDataManager.getData((Player) player).getTicket());
+            }
+            case TOTAL_MATCHES -> {
+                return String.valueOf(plugin.playerDataManager.getData((Player) player).streamGameHistory()
+                        .map(GameHistory::getTotalPlayTimes)
+                        .reduce(0, Integer::sum));
+            }
+            case TOTAL_WINS -> {
+                return String.valueOf(plugin.playerDataManager.getData((Player) player).streamGameHistory()
+                        .map(GameHistory::getTotalWinTimes)
+                        .reduce(0, Integer::sum));
+            }
+            case TOTAL_LOSSES -> {
+                return String.valueOf(plugin.playerDataManager.getData((Player) player).streamGameHistory()
+                        .map(GameHistory::getTotalLossTimes)
+                        .reduce(0, Integer::sum));
+            }
         }
 
         return null;

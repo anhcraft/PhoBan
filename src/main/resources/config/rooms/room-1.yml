@@ -7,6 +7,7 @@ queue-location: world 0 128 0
 region: "room1"
 levels:
   easy:
+    ticket-cost: 1
     min-players: 1
     max-players: 5
     playing-time: 1800
@@ -23,6 +24,7 @@ levels:
     first-win-rewards:
       - eco give {player} 20000
   medium:
+    ticket-cost: 1
     min-players: 1
     max-players: 5
     playing-time: 1400
@@ -39,6 +41,7 @@ levels:
     first-win-rewards:
       - eco give {player} 20000
   hard:
+    ticket-cost: 2
     min-players: 2
     max-players: 3
     playing-time: 1200

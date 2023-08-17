@@ -14,6 +14,7 @@ public class GameHistory {
     AtomicBoolean dirty;
 
     private Map<Difficulty, Integer> playTimes = new HashMap<>();
+    private Map<Difficulty, Integer> winTimes = new HashMap<>();
     private Map<Difficulty, Long> bestCompleteTime = new HashMap<>();
 
     public int getPlayTimes(Difficulty difficulty) {
@@ -22,6 +23,22 @@ public class GameHistory {
 
     public int getTotalPlayTimes() {
         return playTimes.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    public int getWinTimes(Difficulty difficulty) {
+        return winTimes.getOrDefault(difficulty, 0);
+    }
+
+    public int getTotalWinTimes() {
+        return winTimes.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    public int getLossTimes(Difficulty difficulty) {
+        return getPlayTimes(difficulty) - getWinTimes(difficulty);
+    }
+
+    public int getTotalLossTimes() {
+        return getTotalPlayTimes() - getTotalWinTimes();
     }
 
     public long getBestCompleteTime(Difficulty difficulty) {
@@ -37,6 +54,13 @@ public class GameHistory {
         playTimes.put(difficulty, newPlayTime);
         dirty.set(true);
         return newPlayTime;
+    }
+
+    public int increaseWinTime(Difficulty difficulty) {
+        int newWinTime = getWinTimes(difficulty) + 1;
+        winTimes.put(difficulty, newWinTime);
+        dirty.set(true);
+        return newWinTime;
     }
 
     public void addCompleteTime(Difficulty difficulty, long time) {

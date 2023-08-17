@@ -70,7 +70,7 @@ public class Room {
                     Player p = Bukkit.getPlayer(uuid);
                     if (p == null) continue;
                     placeholder.actionBar(p, plugin.messageConfig.waitingCooldown);
-                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 0.5f);
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
                 }
 
                 if (remain == 0) {
@@ -116,7 +116,7 @@ public class Room {
                     fwm.setPower(RandomUtil.randomInt(2, 5));
                     fw.setFireworkMeta(fwm);
 
-                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 0.5f);
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
                 }
             });
 
@@ -128,6 +128,7 @@ public class Room {
         for (Iterator<Map.Entry<UUID, Integer>> it = separators.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<UUID, Integer> ent = it.next();
             if (ent.getValue() < 0) continue;
+            ent.setValue(ent.getValue() - 1);
 
             Player p = Bukkit.getPlayer(ent.getKey());
             if (p == null) continue;
@@ -142,14 +143,12 @@ public class Room {
             }
 
             if (p.getGameMode() != GameMode.SPECTATOR) {
-                p.setGameMode(GameMode.SPECTATOR);
+                plugin.sync(() -> p.setGameMode(GameMode.SPECTATOR));
             }
 
             Placeholder placeholder = placeholder().add("cooldown", ent.getValue());
             placeholder.actionBar(p, plugin.messageConfig.respawnCooldown);
-            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 0.5f);
-
-            ent.setValue(ent.getValue() - 1);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
         }
     }
 
@@ -184,10 +183,10 @@ public class Room {
             if (p == null || completeTime < 1) continue;
 
             PlayerData data = plugin.playerDataManager.getData(p);
-            data.addPlayedRoom(id, difficulty);
+            data.addWonRoom(id, difficulty);
 
             GameHistory gameHistory = data.requireRoomHistory(id);
-            int newPlayTime = gameHistory.increasePlayTime(difficulty);
+            int newWinTime = gameHistory.increaseWinTime(difficulty);
             gameHistory.addCompleteTime(difficulty, completeTime);
 
             Placeholder placeholder = placeholder().add("player", p).addTime("completeTime", completeTime);
@@ -196,7 +195,7 @@ public class Room {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
             }
 
-            if (newPlayTime == 1) {
+            if (newWinTime == 1) {
                 for (String reward : getLevel().getFirstWinRewards()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
                 }
@@ -255,8 +254,19 @@ public class Room {
             placeholder().message(player, plugin.messageConfig.maxPlayerReached);
             return false;
         }
+
+        PlayerData playerData = plugin.playerDataManager.getData(player);
+
+        if (playerData.getTicket() >= getLevel().getTicketCost()) {
+            placeholder().message(player, plugin.messageConfig.insufficientTicket);
+            return false;
+        }
+
         if (terminating || !players.add(player.getUniqueId()))
             return false;
+
+        playerData.reduceTicket(getLevel().getTicketCost());
+        playerData.requireRoomHistory(id).increasePlayTime(difficulty);
 
         Placeholder placeholder = placeholder().add("player", player);
 
@@ -264,7 +274,7 @@ public class Room {
             Player p = Bukkit.getPlayer(uuid);
             if (p == null) continue;
             placeholder.message(p, plugin.messageConfig.joinMessage);
-            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.5f);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 0.5f);
         }
 
         plugin.sync(() -> player.teleportAsync(getConfig().getQueueLocation()));

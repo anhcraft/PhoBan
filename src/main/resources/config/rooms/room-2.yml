@@ -8,6 +8,7 @@ requirement: "room1:easy"
 region: "room2"
 levels:
   easy:
+    ticket-cost: 1
     min-players: 1
     max-players: 5
     playing-time: 1800
@@ -22,6 +23,7 @@ levels:
     win-rewards:
       - eco give {player} 10000
   medium:
+    ticket-cost: 2
     min-players: 1
     max-players: 5
     playing-time: 1400
@@ -36,6 +38,7 @@ levels:
     win-rewards:
       - eco give {player} 20000
   hard:
+    ticket-cost: 3
     min-players: 2
     max-players: 3
     playing-time: 1200

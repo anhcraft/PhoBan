@@ -69,13 +69,14 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 return;
             }
 
-            if (difficulty.ordinal() > 0 && !playerData.hasPlayedRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
+            if (difficulty.ordinal() > 0 && !playerData.hasWonRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
                 Placeholder placeholder = Placeholder.create()
+                        .add("dungeon", roomConfig.getName())
+                        .add("difficulty", difficulty)
                         .add("requiredRoom", roomConfig.getName())
                         .add("requiredDifficulty", Difficulty.values()[difficulty.ordinal()-1]);
                 replaceItem(slot, (index, itemBuilder) -> {
                     itemBuilder.material(roomConfig.getIcon());
-                    itemBuilder.name(roomConfig.getName());
                     itemBuilder.lore(roomConfig.getDescription());
                     itemBuilder.lore().addAll(GuiRegistry.DIFFICULTY_SELECTOR.roomLockedTrailer);
                     return placeholder.replace(itemBuilder);
@@ -87,16 +88,21 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
             LevelConfig levelConfig = roomConfig.getLevel(difficulty);
             GameHistory history = playerData.getGameHistory(roomId);
             Placeholder placeholder = Placeholder.create()
+                    .add("dungeon", roomConfig.getName())
+                    .add("difficulty", difficulty)
                     .add("playTimes", history == null ? 0 : history.getPlayTimes(difficulty))
                     .addTime("bestCompleteTime", history == null ? 0 : history.getBestCompleteTime(difficulty))
+                    .add("wins", history == null ? 0 : history.getWinTimes(difficulty))
+                    .add("losses", history == null ? 0 : history.getLossTimes(difficulty))
+                    .addRatio("winRatio", history == null ? 0 : (double) history.getWinTimes(difficulty) / history.getPlayTimes(difficulty))
                     .add("currentPlayers", 0)
                     .add("maxPlayers", levelConfig.getMaxPlayers())
+                    .add("ticketCost", levelConfig.getTicketCost())
                     .add("difficulty", difficulty)
                     .add("stage", Stage.AVAILABLE);
 
             replaceItem(slot, (index, itemBuilder) -> {
                 itemBuilder.material(roomConfig.getIcon());
-                itemBuilder.name(roomConfig.getName());
                 itemBuilder.lore(roomConfig.getDescription());
                 itemBuilder.lore().addAll(GuiRegistry.DIFFICULTY_SELECTOR.roomLoreTrailer);
                 return placeholder.replace(itemBuilder);

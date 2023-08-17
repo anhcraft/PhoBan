@@ -1,5 +1,5 @@
 free-ticket:
-  amount: 1
+  amount: 5
   every: 86400
 room-settings:
   waiting-time: 15

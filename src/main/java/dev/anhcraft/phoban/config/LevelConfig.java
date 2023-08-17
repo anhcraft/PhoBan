@@ -12,6 +12,7 @@ import java.util.List;
 
 @Configurable(keyNamingStyle = Configurable.NamingStyle.TRAIN_CASE)
 public class LevelConfig {
+    private int ticketCost;
     private int minPlayers;
     private int maxPlayers;
     private int playingTime;
@@ -36,6 +37,10 @@ public class LevelConfig {
     @PostHandler
     private void postHandler() {
         this.mobSpawnRules = this.mobs.stream().map(MobSpawnRule::parse).toList();
+    }
+
+    public int getTicketCost() {
+        return ticketCost;
     }
 
     public int getMinPlayers() {

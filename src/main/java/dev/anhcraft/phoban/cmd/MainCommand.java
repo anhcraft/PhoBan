@@ -10,6 +10,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -57,6 +58,46 @@ public class MainCommand extends BaseCommand {
     public void terminate(CommandSender sender, String room) {
         plugin.gameManager.tryTerminate(room);
         sender.sendMessage(ChatColor.GREEN + "Terminated " + room);
+    }
+
+    @Subcommand("ticket add")
+    @CommandPermission("phoban.ticket.add")
+    public void addTicket(CommandSender sender, OfflinePlayer player, int amount) {
+        if (!player.hasPlayedBefore()) {
+            sender.sendMessage(ChatColor.RED + "This player has not played before!");
+            return;
+        }
+        if (!player.isOnline())
+            sender.sendMessage(ChatColor.YELLOW + "Fetching player data as he is currently offline...");
+
+        plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
+            if (throwable != null) {
+                sender.sendMessage(ChatColor.RED + throwable.getMessage());
+                return;
+            }
+            playerData.addTicket(amount);
+            sender.sendMessage(ChatColor.GREEN + "Added " + amount + " tickets for " + player.getName());
+        });
+    }
+
+    @Subcommand("ticket set")
+    @CommandPermission("phoban.ticket.set")
+    public void setTicket(CommandSender sender, OfflinePlayer player, int amount) {
+        if (!player.hasPlayedBefore()) {
+            sender.sendMessage(ChatColor.RED + "This player has not played before!");
+            return;
+        }
+        if (!player.isOnline())
+            sender.sendMessage(ChatColor.YELLOW + "Fetching player data as he is currently offline...");
+
+        plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
+            if (throwable != null) {
+                sender.sendMessage(ChatColor.RED + throwable.getMessage());
+                return;
+            }
+            playerData.setTicket(amount);
+            sender.sendMessage(ChatColor.GREEN + "Set " + amount + " tickets for " + player.getName());
+        });
     }
 
     @Subcommand("getpos")

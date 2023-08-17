@@ -14,7 +14,7 @@ public class MainConfig {
     public int freeTicketAmount;
 
     @Path("free-ticket.every")
-    public int freeTicketEvery;
+    public long freeTicketEvery;
 
     @Validation(notNull = true)
     public RoomSettings roomSettings;

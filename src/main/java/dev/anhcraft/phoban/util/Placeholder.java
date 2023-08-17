@@ -32,6 +32,11 @@ public class Placeholder {
         return this;
     }
 
+    public Placeholder addRatio(String key, double ratio) {
+        placeholders.put(key, format(ratio * 100d));
+        return this;
+    }
+
     public String replace(String str) {
         if (str == null || str.isEmpty()) return str;
         Matcher m = INFO_PLACEHOLDER_PATTERN.matcher(str);
