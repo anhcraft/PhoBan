@@ -28,4 +28,4 @@ end-message:
   - "  &eTổ đội: &f{currentPlayers}/{maxPlayers}"
   - ""
 insufficient-ticket: "&cBạn không có đủ số lượng vé yêu cầu!"
-free-ticket-received: "&aBạn đã nhận được &f{amount}&a vé phó bản miễn phí hàng ngày!"
+free-ticket-received: "&aBạn nhận được &f{amount}&a vé phó bản miễn phí hàng ngày!"

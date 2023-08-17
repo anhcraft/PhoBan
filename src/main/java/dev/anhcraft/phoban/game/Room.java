@@ -20,8 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class Room {
+    private static final Predicate<Entity> ENTITY_FILTER = e -> e instanceof Monster || e instanceof Item;
     private final PhoBan plugin;
     private final String id;
     private final Difficulty difficulty;
@@ -54,7 +56,7 @@ public class Room {
         region = WorldGuardUtils.getBoundingBox(getConfig().getRegion(), getConfig().getWorld());
         completeTime = 0;
         if (region != null) {
-            plugin.sync(() -> getConfig().getWorld().getNearbyEntities(region, e -> e instanceof Monster).forEach(Entity::remove));
+            plugin.sync(() -> getConfig().getWorld().getNearbyEntities(region, ENTITY_FILTER).forEach(Entity::remove));
         }
     }
 
@@ -113,7 +115,7 @@ public class Room {
                     fwm.addEffect(FireworkEffect.builder().withColor(Color.RED).withFade(Color.WHITE).build());
                     fwm.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.WHITE).build());
                     fwm.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withFade(Color.WHITE).build());
-                    fwm.setPower(RandomUtil.randomInt(2, 5));
+                    fwm.setPower(RandomUtil.randomInt(1, 3));
                     fw.setFireworkMeta(fwm);
 
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
@@ -212,7 +214,7 @@ public class Room {
         terminating = true;
 
         if (getRegion() != null) {
-            getConfig().getWorld().getNearbyEntities(getRegion(), e -> e instanceof Monster).forEach(Entity::remove);
+            getConfig().getWorld().getNearbyEntities(getRegion(), ENTITY_FILTER).forEach(Entity::remove);
         }
 
         for (UUID uuid : players) {
@@ -227,21 +229,9 @@ public class Room {
     boolean handleJoinRoom(Player player) {
         if (players.contains(player.getUniqueId())) {
             if (stage == Stage.WAITING) {
-                plugin.sync(() -> {
-                    player.teleportAsync(getConfig().getQueueLocation()).thenRun(() -> {
-                        plugin.sync(() -> player.setGameMode(GameMode.SURVIVAL), 30);
-                    });
-                });
+                plugin.sync(() -> player.teleportAsync(getConfig().getQueueLocation()));
             } else {
-                plugin.sync(() -> {
-                    player.teleportAsync(getConfig().getSpawnLocation()).thenRun(() -> {
-                        if (separators.containsKey(player.getUniqueId())) {
-                            plugin.sync(() -> player.setGameMode(GameMode.SPECTATOR), 30);
-                        } else {
-                            plugin.sync(() -> player.setGameMode(GameMode.SURVIVAL), 30);
-                        }
-                    });
-                });
+                plugin.sync(() -> player.teleportAsync(getConfig().getSpawnLocation()));
             }
             return true;
         }
@@ -257,7 +247,7 @@ public class Room {
 
         PlayerData playerData = plugin.playerDataManager.getData(player);
 
-        if (playerData.getTicket() >= getLevel().getTicketCost()) {
+        if (playerData.getTicket() < getLevel().getTicketCost()) {
             placeholder().message(player, plugin.messageConfig.insufficientTicket);
             return false;
         }

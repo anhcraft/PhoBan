@@ -1,9 +1,11 @@
 package dev.anhcraft.phoban.listener;
 
 import dev.anhcraft.phoban.PhoBan;
+import dev.anhcraft.phoban.game.Room;
 import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.Placeholder;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +14,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class GameListener implements Listener {
     private final PhoBan plugin;
@@ -23,6 +27,7 @@ public class GameListener implements Listener {
     @EventHandler
     private void join(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        player.setGameMode(GameMode.SURVIVAL);
         plugin.gameManager.rejoinRoom(player);
         plugin.sync(() -> {
             PlayerData pd = plugin.playerDataManager.getData(player);
@@ -43,6 +48,22 @@ public class GameListener implements Listener {
     @EventHandler
     private void death(PlayerDeathEvent event) {
         plugin.gameManager.handlePlayerDeath(event);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void move(PlayerMoveEvent event) {
+        if (!event.hasExplicitlyChangedBlock()) return;
+        Room room = plugin.gameManager.getRoom(event.getPlayer().getUniqueId());
+        if (room == null || !room.getSeparators().contains(event.getPlayer().getUniqueId())) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void teleport(PlayerTeleportEvent event) {
+        if (!event.hasExplicitlyChangedBlock() || event.getCause() != PlayerTeleportEvent.TeleportCause.SPECTATE) return;
+        Room room = plugin.gameManager.getRoom(event.getPlayer().getUniqueId());
+        if (room != null)
+            event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)

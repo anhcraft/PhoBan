@@ -8,7 +8,6 @@ import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.gui.GuiRegistry;
 import dev.anhcraft.phoban.util.ConfigHelper;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
-import org.bukkit.GameMode;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -105,12 +104,12 @@ public class GameManager {
 
         // create here
         room = new Room(plugin, roomId, difficulty);
-        roomMap.put(roomId, room);
         room.initialize();
-        boss2room.put(room.getLevel().getBossId(), roomId);
 
         if(room.handleJoinRoom(player)) {
             player2room.put(player.getUniqueId(), roomId);
+            roomMap.put(roomId, room);
+            boss2room.put(room.getLevel().getBossId(), roomId);
         }
     }
 
@@ -135,13 +134,11 @@ public class GameManager {
     public void rejoinRoom(Player player) {
         String id = player2room.get(player.getUniqueId());
         if (id == null) {
-            player.setGameMode(GameMode.SURVIVAL);
             return;
         }
 
         Room room = roomMap.get(id);
         if (room == null) {
-            player.setGameMode(GameMode.SURVIVAL);
             player2room.remove(player.getUniqueId());
             return;
         }

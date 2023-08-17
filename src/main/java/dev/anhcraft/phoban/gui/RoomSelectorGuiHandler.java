@@ -78,21 +78,29 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
             GameHistory history = playerData.getGameHistory(roomId);
             Placeholder placeholder = Placeholder.create()
                     .add("stage", stage)
-                    .add("playTimes", history == null ? 0 : history.getTotalPlayTimes())
-                    .addTime("bestCompleteTime", history == null ? 0 : history.getBestCompleteOfAllTime());
+                    .addUnknown("playTimes")
+                    .addUnknown("wins")
+                    .addUnknown("losses")
+                    .addUnknown("winRatio")
+                    .addUnknown("bestCompleteTime");
 
             if (room != null) {
                 Difficulty difficulty = room.getDifficulty();
                 LevelConfig levelConfig = roomConfig.getLevel(room.getDifficulty());
 
-                placeholder.add("wins", history == null ? 0 : history.getWinTimes(difficulty))
-                        .add("losses", history == null ? 0 : history.getLossTimes(difficulty))
-                        .addRatio("winRatio", history == null ? 0 : (double) history.getWinTimes(difficulty) / history.getPlayTimes(difficulty))
-                        .add("currentPlayers", room.getPlayers().size())
+                placeholder.add("currentPlayers", room.getPlayers().size())
                         .add("maxPlayers", levelConfig.getMaxPlayers())
                         .add("ticketCost", levelConfig.getTicketCost())
                         .add("difficulty", room.getDifficulty())
                         .addTime("timeLeft", room.getTimeLeft());
+
+                if (history != null) {
+                    placeholder.add("playTimes", history.getPlayTimes(difficulty))
+                            .add("wins", history.getWinTimes(difficulty))
+                            .add("losses", history.getLossTimes(difficulty))
+                            .addRatio("winRatio", history.getWinTimes(difficulty), history.getPlayTimes(difficulty))
+                            .addTime("bestCompleteTime", history.getBestCompleteTime(difficulty));
+                }
 
                 if (difficulty.ordinal() > 0 && !playerData.hasWonRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
                     placeholder.add("requiredRoom", roomConfig.getName())
@@ -107,6 +115,12 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                     getSlot(slot).clearEvents();
                     continue;
                 }
+            } else if (history != null) {
+                placeholder.add("playTimes", history.getTotalPlayTimes())
+                        .add("wins", history.getTotalWinTimes())
+                        .add("losses", history.getTotalLossTimes())
+                        .addRatio("winRatio", history.getTotalWinTimes(), history.getTotalPlayTimes())
+                        .addTime("bestCompleteTime", history.getBestCompleteOfAllTime());
             }
 
             replaceItem(slot, (index, itemBuilder) -> {

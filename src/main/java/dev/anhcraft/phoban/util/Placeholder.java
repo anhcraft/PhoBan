@@ -32,8 +32,13 @@ public class Placeholder {
         return this;
     }
 
-    public Placeholder addRatio(String key, double ratio) {
-        placeholders.put(key, format(ratio * 100d));
+    public Placeholder addRatio(String key, double a, double b) {
+        placeholders.put(key, Math.abs(b) < 0.001 ? "-" : (format(a / b * 100) + "%"));
+        return this;
+    }
+
+    public Placeholder addUnknown(String key) {
+        placeholders.put(key, "-");
         return this;
     }
 
@@ -44,7 +49,7 @@ public class Placeholder {
         while (m.find()) {
             String p = m.group();
             String s = p.substring(1, p.length() - 1).trim();
-            m.appendReplacement(sb, placeholders.get(s));
+            m.appendReplacement(sb, placeholders.getOrDefault(s, "(null)"));
         }
         m.appendTail(sb);
         return sb.toString();

@@ -35,7 +35,7 @@ room-lore-trailer:
   - ""
   - "&eLịch sử:"
   - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"
-  - "&7 ▪ Thắng &f{wins}&7 trận &7({winRatio}%)"
+  - "&7 ▪ Thắng &f{wins}&7 trận &7({winRatio})"
   - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
   - ""
   - "&e> Nhấn để tạo phòng"
