@@ -110,6 +110,7 @@ public final class PhoBan extends JavaPlugin {
         new File(getDataFolder(), "gui").mkdir();
         GuiRegistry.ROOM_SELECTOR = ConfigHelper.load(RoomSelectorGui.class, requestConfig("gui/room-selector.yml"));
         GuiRegistry.DIFFICULTY_SELECTOR = ConfigHelper.load(DifficultySelectorGui.class, requestConfig("gui/difficulty-selector.yml"));
+        GuiRegistry.SOUND_EXPLORER = ConfigHelper.load(DifficultySelectorGui.class, requestConfig("gui/sound-explorer.yml"));
 
         playerDataManager.reload();
         gameManager.reload();

@@ -33,7 +33,7 @@ public class Placeholder {
     }
 
     public Placeholder addRatio(String key, double a, double b) {
-        placeholders.put(key, Math.abs(b) < 0.001 ? "-" : (format(a / b * 100) + "%"));
+        placeholders.put(key, Math.abs(b) < 0.001 ? "-" : String.format("%.02f%%", a / b * 100));
         return this;
     }
 
@@ -75,6 +75,10 @@ public class Placeholder {
     private String format(Object v) {
         if (v == null) {
             return "(null)";
+        } else if (v instanceof Double) {
+            return String.format("%.02f", v);
+        } else if (v instanceof Float) {
+            return String.format("%.02f", v);
         } else if (v instanceof Number || v instanceof Boolean) {
             return v.toString();
         } else if (v instanceof String) {

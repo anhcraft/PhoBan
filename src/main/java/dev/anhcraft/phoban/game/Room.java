@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class Room {
-    private static final Predicate<Entity> ENTITY_FILTER = e -> e instanceof Monster || e instanceof Item;
+    private static final Predicate<Entity> ENTITY_FILTER = e -> e instanceof Monster || e instanceof Item || e instanceof Projectile;
     private final PhoBan plugin;
     private final String id;
     private final Difficulty difficulty;
@@ -36,6 +36,7 @@ public class Room {
     private int timeCounter;
     private boolean starting;
     private boolean terminating;
+    private boolean won;
     private int completeTime;
 
     public Room(PhoBan plugin, String id, Difficulty difficulty) {
@@ -63,8 +64,21 @@ public class Room {
     public void asyncTickPerSec() {
         timeCounter++;
 
+        if (getTimeCounter() > 10 && (players.isEmpty() || (!separators.isEmpty() && separators.values().stream().allMatch(i -> i < 0)))) {
+            stage = Stage.ENDING;
+            plugin.sync(this::syncTerminate);
+            return;
+        }
+
         if (stage == Stage.WAITING) {
             if (starting) {
+                if (players.size() >= getLevel().getMaxPlayers()) {
+                    stage = Stage.PLAYING;
+                    starting = false;
+                    asyncStartGame();
+                    return;
+                }
+
                 int remain = getTimeLeft();
                 Placeholder placeholder = placeholder().add("cooldown", remain);
 
@@ -84,6 +98,7 @@ public class Room {
                         stage = Stage.WAITING;
                     }
                     timeCounter = 0;
+                    return;
                 }
             } else if (players.size() >= getLevel().getMinPlayers()) {
                 starting = true;
@@ -91,10 +106,7 @@ public class Room {
         } else if (stage == Stage.PLAYING) {
             plugin.sync(() -> mobSpawner.syncTickPerSec(this));
 
-            if (players.isEmpty()) {
-                stage = Stage.ENDING;
-                plugin.sync(this::syncTerminate);
-            } else if (getTimeLeft() == 0) {
+            if (getTimeLeft() == 0) {
                 stage = Stage.ENDING;
                 completeTime = timeCounter;
                 timeCounter = 0;
@@ -110,15 +122,17 @@ public class Room {
                     if (p == null) continue;
                     placeholder.actionBar(p, plugin.messageConfig.endingCooldown);
 
-                    Firework fw = (Firework) getConfig().getWorld().spawnEntity(p.getLocation(), EntityType.FIREWORK);
-                    FireworkMeta fwm = fw.getFireworkMeta();
-                    fwm.addEffect(FireworkEffect.builder().withColor(Color.RED).withFade(Color.WHITE).build());
-                    fwm.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.WHITE).build());
-                    fwm.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withFade(Color.WHITE).build());
-                    fwm.setPower(RandomUtil.randomInt(1, 3));
-                    fw.setFireworkMeta(fwm);
-
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
+
+                    if (won) {
+                        Firework fw = (Firework) getConfig().getWorld().spawnEntity(p.getLocation(), EntityType.FIREWORK);
+                        FireworkMeta fwm = fw.getFireworkMeta();
+                        fwm.addEffect(FireworkEffect.builder().withColor(Color.RED).withFade(Color.WHITE).build());
+                        fwm.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.WHITE).build());
+                        fwm.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withFade(Color.WHITE).build());
+                        fwm.setPower(RandomUtil.randomInt(1, 3));
+                        fw.setFireworkMeta(fwm);
+                    }
                 }
             });
 
@@ -129,11 +143,14 @@ public class Room {
 
         for (Iterator<Map.Entry<UUID, Integer>> it = separators.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<UUID, Integer> ent = it.next();
-            if (ent.getValue() < 0) continue;
-            ent.setValue(ent.getValue() - 1);
+            if (ent.getValue() < 0) continue; // ignore spectators who no longer have respawn chance
+
+            ent.setValue(Math.max(0, ent.getValue() - 1));
 
             Player p = Bukkit.getPlayer(ent.getKey());
-            if (p == null) continue;
+            if (p == null) {
+                continue;
+            }
 
             if (ent.getValue() == 0) {
                 plugin.sync(() -> {
@@ -159,6 +176,7 @@ public class Room {
             for (UUID uuid : players) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p == null) continue;
+                plugin.playerDataManager.getData(p).requireRoomHistory(id).increasePlayTime(difficulty);
                 p.teleportAsync(getConfig().getSpawnLocation()).thenRun(() -> {
                     plugin.msg(p, plugin.messageConfig.gameStarted);
                     p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
@@ -180,31 +198,47 @@ public class Room {
             p.setGameMode(GameMode.SURVIVAL);
         }
 
-        for (UUID uuid : players) {
-            Player p = Bukkit.getPlayer(uuid);
-            if (p == null || completeTime < 1) continue;
+        if (won) {
+            for (UUID uuid : players) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p == null || completeTime < 1) continue;
 
-            PlayerData data = plugin.playerDataManager.getData(p);
-            data.addWonRoom(id, difficulty);
+                PlayerData data = plugin.playerDataManager.getData(p);
+                data.addWonRoom(id, difficulty);
 
-            GameHistory gameHistory = data.requireRoomHistory(id);
-            int newWinTime = gameHistory.increaseWinTime(difficulty);
-            gameHistory.addCompleteTime(difficulty, completeTime);
+                GameHistory gameHistory = data.requireRoomHistory(id);
+                int newWinTime = gameHistory.increaseWinTime(difficulty);
+                gameHistory.addCompleteTime(difficulty, completeTime);
 
-            Placeholder placeholder = placeholder().add("player", p).addTime("completeTime", completeTime);
+                Placeholder placeholder = placeholder().add("player", p).addTime("completeTime", completeTime);
 
-            for (String reward : getLevel().getWinRewards()) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
-            }
-
-            if (newWinTime == 1) {
-                for (String reward : getLevel().getFirstWinRewards()) {
+                for (String reward : getLevel().getWinRewards()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
                 }
-            }
 
-            for (String msg : plugin.messageConfig.endMessage) {
-                placeholder.messageRaw(p, msg);
+                if (newWinTime == 1) {
+                    for (String reward : getLevel().getFirstWinRewards()) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
+                    }
+                }
+
+                for (String msg : plugin.messageConfig.winMessage) {
+                    placeholder.messageRaw(p, msg);
+                }
+            }
+        } else {
+            for (UUID uuid : players) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p == null || completeTime < 1) continue;
+
+                GameHistory gameHistory = plugin.playerDataManager.getData(p).requireRoomHistory(id);
+                gameHistory.addCompleteTime(difficulty, completeTime);
+
+                Placeholder placeholder = placeholder().add("player", p).addTime("completeTime", completeTime);
+
+                for (String msg : plugin.messageConfig.lossMessage) {
+                    placeholder.messageRaw(p, msg);
+                }
             }
         }
     }
@@ -256,7 +290,6 @@ public class Room {
             return false;
 
         playerData.reduceTicket(getLevel().getTicketCost());
-        playerData.requireRoomHistory(id).increasePlayTime(difficulty);
 
         Placeholder placeholder = placeholder().add("player", player);
 
@@ -298,7 +331,11 @@ public class Room {
         Placeholder placeholder = placeholder().add("boss", event.getMob().getDisplayName());
 
         if (event.getKiller() != null) {
-            placeholder.add("killer", event.getKiller());
+            placeholder.add("killer", event.getKiller()).add("player", event.getKiller());
+        }
+
+        for (String reward : getLevel().getBossKillRewards()) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
         }
 
         for (UUID uuid : players) {
@@ -310,6 +347,7 @@ public class Room {
         stage = Stage.ENDING;
         completeTime = timeCounter;
         timeCounter = 0;
+        won = true;
         syncEndGame();
     }
 

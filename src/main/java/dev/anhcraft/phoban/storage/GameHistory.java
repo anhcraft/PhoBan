@@ -46,7 +46,7 @@ public class GameHistory {
     }
 
     public long getBestCompleteOfAllTime() {
-        return bestCompleteTime.values().stream().mapToLong(Long::longValue).max().orElse(0L);
+        return bestCompleteTime.values().stream().mapToLong(Long::longValue).min().orElse(0L);
     }
 
     public int increasePlayTime(Difficulty difficulty) {
@@ -64,7 +64,7 @@ public class GameHistory {
     }
 
     public void addCompleteTime(Difficulty difficulty, long time) {
-        bestCompleteTime.put(difficulty, Math.max(getBestCompleteTime(difficulty), time));
+        bestCompleteTime.put(difficulty, Math.min(getBestCompleteTime(difficulty), time));
         dirty.set(true);
     }
 }

@@ -1,0 +1,52 @@
+title: "&0&lSound Explorer"
+layout:
+  - "---------"
+  - "xxxxxxxxx"
+  - "xxxxxxxxx"
+  - "xxxxxxxxx"
+  - "--<>-vp--"
+components:
+  "-":
+    material: black_stained_glass_pane
+    name: "&a"
+  "x":
+    type: sound
+    material: music_disc_cat
+    name: "&f{sound}"
+    lore:
+      - "&aVolume: {volume}"
+      - "&aPitch: {pitch}"
+      - ""
+      - "&e[Left] Play sound once"
+      - "&e[Shift+Left] Play continuously for 10s"
+      - "&e[Right] Stop sound"
+  "<":
+    type: previous
+    material: slime_block
+    name: "&f{page}/{maxPage}"
+    lore:
+      - "&eClick to see previous page"
+  ">":
+    type: next
+    material: slime_block
+    name: "&f{page}/{maxPage}"
+    lore:
+      - "&eClick to see next page"
+  "v":
+    type: volume
+    material: lime_dye
+    name: "&fModify volume"
+    lore:
+      - "&aCurrent: {volume}"
+      - ""
+      - "&e[Left] Increase by 0.1"
+      - "&e[Right] Decrease by 0.1"
+  "p":
+    type: pitch
+    material: purple_dye
+    name: "&fModify pitch"
+    lore:
+      - "&aCurrent: {pitch}"
+      - ""
+      - "&e[Left] Increase by 0.1"
+      - "&e[Right] Decrease by 0.1"

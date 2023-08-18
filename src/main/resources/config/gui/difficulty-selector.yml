@@ -5,11 +5,11 @@ layout:
   - "----q----"
 components:
   "-":
-    material: BLACK_STAINED_GLASS_PANE
+    material: black_stained_glass_pane
     name: "&a"
   "x":
     type: difficulty
-    material: BLACK_STAINED_GLASS_PANE
+    material: black_stained_glass_pane
     name: "&a{dungeon} &7({difficulty}&7)"
   "q":
     type: quit
@@ -24,7 +24,6 @@ room-locked-trailer:
   - "&eThông tin:"
   - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
   - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}"
-  - ""
 
 room-lore-trailer:
   - ""
@@ -39,4 +38,4 @@ room-lore-trailer:
   - "&7 ▪ Kết quả tốt nhất là &f{bestCompleteTime}"
   - ""
   - "&e> Nhấn để tạo phòng"
-  - "&7  Tiêu hao &c{ticketCost}&7 vé"
+  - "&7&o  Tiêu hao &c&o{ticketCost}&7&o vé"

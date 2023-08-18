@@ -6,19 +6,48 @@ layout:
   - "---------"
 components:
   "-":
-    material: BLACK_STAINED_GLASS_PANE
+    material: black_stained_glass_pane
     name: "&a"
   "x":
     type: room
-    material: BLACK_STAINED_GLASS_PANE
+    material: black_stained_glass_pane
     name: "&a"
 
 room-locked-trailer:
-  - ""
-  - "&eThông tin:"
-  - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
-  - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}&7 trở lên"
-  - ""
+  available:
+   - ""
+   - "&eThông tin:"
+   - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
+   - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}&7 trở lên"
+  waiting:
+    - ""
+    - "&eThông tin:"
+    - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
+    - "&7 ▪ Trạng thái: {stage}"
+    - "&7 ▪ Độ khó: {difficulty}"
+    - ""
+    - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
+    - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}&7 trở lên"
+  playing:
+    - ""
+    - "&eThông tin:"
+    - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
+    - "&7 ▪ Trạng thái: {stage}"
+    - "&7 ▪ Độ khó: {difficulty}"
+    - "&7 ▪ Thời gian còn lại: &f{timeLeft}"
+    - ""
+    - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
+    - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}&7 trở lên"
+  ending:
+    - ""
+    - "&eThông tin:"
+    - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
+    - "&7 ▪ Trạng thái: {stage}"
+    - "&7 ▪ Độ khó: {difficulty}"
+    - "&7 ▪ Thời gian còn lại: &f{timeLeft}"
+    - ""
+    - "&c&l ✕&7 Phó bản này chưa được mở khoá!"
+    - "&7 ▪ &cYêu cầu: &7{requiredRoom}&7 mức độ {requiredDifficulty}&7 trở lên"
 
 room-lore-trailer:
   available:
@@ -45,7 +74,7 @@ room-lore-trailer:
     - "&7 ▪ Kết quả tốt nhất: &f{bestCompleteTime}"
     - ""
     - "&e> Nhấn để tham gia"
-    - "&7  Tiêu hao &c{ticketCost}&7 vé"
+    - "&7&o  Tiêu hao &c&o{ticketCost}&7&o vé"
   playing:
     - ""
     - "&eThông tin:"

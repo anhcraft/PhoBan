@@ -7,6 +7,7 @@ import dev.anhcraft.phoban.config.LevelConfig;
 import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.game.Difficulty;
 import dev.anhcraft.phoban.game.Room;
+import dev.anhcraft.phoban.game.RoomRequirement;
 import dev.anhcraft.phoban.game.Stage;
 import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.storage.PlayerData;
@@ -53,24 +54,10 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                 continue;
             }
 
+            RoomRequirement failedRequirement = null;
+
             if (roomConfig.getRoomRequirement() != null && !playerData.hasWonRoom(roomConfig.getRoomRequirement())) {
-                RoomConfig required = PhoBan.instance.gameManager.getRoomConfig(roomConfig.getRoomRequirement().name());
-                if (required == null) {
-                    resetItem(slot);
-                } else {
-                    replaceItem(slot, (index, itemBuilder) -> {
-                        itemBuilder.material(roomConfig.getIcon());
-                        itemBuilder.name(roomConfig.getName());
-                        itemBuilder.lore(roomConfig.getDescription());
-                        itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLockedTrailer);
-                        return Placeholder.create()
-                                .add("requiredRoom", required.getName())
-                                .add("requiredDifficulty", roomConfig.getRoomRequirement().minimumDifficulty())
-                                .replace(itemBuilder);
-                    });
-                }
-                getSlot(slot).clearEvents();
-                continue;
+                failedRequirement = roomConfig.getRoomRequirement();
             }
 
             Room room = PhoBan.instance.gameManager.getRoom(roomId);
@@ -102,18 +89,9 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                             .addTime("bestCompleteTime", history.getBestCompleteTime(difficulty));
                 }
 
-                if (difficulty.ordinal() > 0 && !playerData.hasWonRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
-                    placeholder.add("requiredRoom", roomConfig.getName())
-                            .add("requiredDifficulty", Difficulty.values()[difficulty.ordinal()-1]);
-                    replaceItem(slot, (index, itemBuilder) -> {
-                        itemBuilder.material(roomConfig.getIcon());
-                        itemBuilder.name(roomConfig.getName());
-                        itemBuilder.lore(roomConfig.getDescription());
-                        itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLockedTrailer);
-                        return placeholder.replace(itemBuilder);
-                    });
-                    getSlot(slot).clearEvents();
-                    continue;
+                if (failedRequirement == null && difficulty.ordinal() > 0 &&
+                        !playerData.hasWonRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
+                    failedRequirement = new RoomRequirement(roomId, Difficulty.values()[difficulty.ordinal()-1]);
                 }
             } else if (history != null) {
                 placeholder.add("playTimes", history.getTotalPlayTimes())
@@ -121,6 +99,26 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                         .add("losses", history.getTotalLossTimes())
                         .addRatio("winRatio", history.getTotalWinTimes(), history.getTotalPlayTimes())
                         .addTime("bestCompleteTime", history.getBestCompleteOfAllTime());
+            }
+
+            if (failedRequirement != null) {
+                RoomConfig required = PhoBan.instance.gameManager.getRoomConfig(failedRequirement.name());
+                if (required == null) {
+                    resetItem(slot);
+                } else {
+                    placeholder.add("requiredRoom", required.getName())
+                            .add("requiredDifficulty", failedRequirement.minimumDifficulty());
+
+                    replaceItem(slot, (index, itemBuilder) -> {
+                        itemBuilder.material(roomConfig.getIcon());
+                        itemBuilder.name(roomConfig.getName());
+                        itemBuilder.lore(roomConfig.getDescription());
+                        itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLockedTrailer.get(stage));
+                        return placeholder.replace(itemBuilder);
+                    });
+                }
+                getSlot(slot).clearEvents();
+                continue;
             }
 
             replaceItem(slot, (index, itemBuilder) -> {

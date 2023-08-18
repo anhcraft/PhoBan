@@ -17,11 +17,13 @@ levels:
     mobs:
       - zombie @amount=3 @every=10 @delay=3
       - zombie world 0 128 0 @amount=5
-      - SkeletonKing world 0 128 0 @delay=10111111
+      - SkeletonKing world 0 128 0 @delay=10
       - SkeletalMinion world 0 128 0 @delay=10
     win-rewards:
       - eco give {player} 10000
     first-win-rewards:
+      - eco give {player} 20000
+    boss-kill-rewards:
       - eco give {player} 20000
   medium:
     ticket-cost: 1
@@ -40,6 +42,8 @@ levels:
       - eco give {player} 20000
     first-win-rewards:
       - eco give {player} 20000
+    boss-kill-rewards:
+      - eco give {player} 40000
   hard:
     ticket-cost: 2
     min-players: 2
@@ -57,3 +61,5 @@ levels:
       - eco give {player} 30000
     first-win-rewards:
       - eco give {player} 20000
+    boss-kill-rewards:
+      - eco give {player} 70000

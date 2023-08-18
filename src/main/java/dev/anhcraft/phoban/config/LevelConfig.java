@@ -31,6 +31,9 @@ public class LevelConfig {
     @Validation(notNull = true, silent = true)
     private List<String> firstWinRewards = Collections.emptyList();
 
+    @Validation(notNull = true, silent = true)
+    private List<String> bossKillRewards = Collections.emptyList();
+
     @Exclude
     private List<MobSpawnRule> mobSpawnRules;
 
@@ -81,5 +84,10 @@ public class LevelConfig {
     @NotNull
     public List<String> getFirstWinRewards() {
         return firstWinRewards;
+    }
+
+    @NotNull
+    public List<String> getBossKillRewards() {
+        return bossKillRewards;
     }
 }

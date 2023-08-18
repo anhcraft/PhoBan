@@ -60,6 +60,12 @@ public class MainCommand extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Terminated " + room);
     }
 
+    @Subcommand("sound")
+    @CommandPermission("phoban.sound")
+    public void sound(Player player) {
+        GuiRegistry.openSoundExplorer(player);
+    }
+
     @Subcommand("ticket add")
     @CommandPermission("phoban.ticket.add")
     public void addTicket(CommandSender sender, OfflinePlayer player, int amount) {

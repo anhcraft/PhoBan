@@ -31,7 +31,8 @@ public class MessageConfig {
     public String killMessage;
     public String respawnCooldown;
     public String respawnMax;
-    public List<String> endMessage;
+    public List<String> winMessage;
+    public List<String> lossMessage;
     public String insufficientTicket;
     public String freeTicketReceived;
 }
