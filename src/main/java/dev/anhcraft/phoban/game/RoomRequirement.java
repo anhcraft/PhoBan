@@ -6,6 +6,6 @@ public record RoomRequirement(String name, Difficulty minimumDifficulty) {
         if (split.length == 1) {
             return new RoomRequirement(split[0], Difficulty.EASY);
         }
-        return new RoomRequirement(split[0], Difficulty.valueOf(split[1]));
+        return new RoomRequirement(split[0], Difficulty.valueOf(split[1].toUpperCase()));
     }
 }
