@@ -10,6 +10,9 @@ import org.bukkit.Location;
 public class MainConfig {
     public int debugLevel;
 
+    @Path("free-ticket.enabled")
+    public boolean freeTicketEnabled;
+
     @Path("free-ticket.amount")
     public int freeTicketAmount;
 

@@ -29,6 +29,9 @@ public class GameListener implements Listener {
         Player player = event.getPlayer();
         player.setGameMode(GameMode.SURVIVAL);
         plugin.gameManager.rejoinRoom(player);
+
+        if (!plugin.mainConfig.freeTicketEnabled) return;
+
         plugin.sync(() -> {
             PlayerData pd = plugin.playerDataManager.getData(player);
             if (pd.getLastFreeTicketTime() + plugin.mainConfig.freeTicketEvery * 1000L < System.currentTimeMillis()) {
