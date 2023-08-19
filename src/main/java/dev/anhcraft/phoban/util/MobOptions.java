@@ -15,7 +15,7 @@ public class MobOptions {
         for (Map.Entry<String, String> entry : options.entrySet()) {
             String key = entry.getKey();
             switch (key) {
-                case "maxHealth" ->
+                case "health", "maxHealth" ->
                         mobOptions.attributes.put(Attribute.GENERIC_MAX_HEALTH, Double.parseDouble(entry.getValue()));
                 case "followRange" ->
                         mobOptions.attributes.put(Attribute.GENERIC_FOLLOW_RANGE, Double.parseDouble(entry.getValue()));
