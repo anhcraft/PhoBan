@@ -2,7 +2,8 @@ title: "&0&lChọn độ khó"
 layout:
   - "---------"
   - "---xxx---"
-  - "----q----"
+  - "---------"
+  - "----q---I"
 components:
   "-":
     material: black_stained_glass_pane

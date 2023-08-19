@@ -10,7 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public record MobSpawnRule(@NotNull String type, int amount, @Nullable Location location, int delay, int every) {
+public record MobSpawnRule(
+        @NotNull String type, int amount, @Nullable Location location,
+        int delay, int every, int times, MobOptions mobOptions
+) {
     public static MobSpawnRule parse(String rule) {
         String[] parts = rule.split("\\s*@\\s*");
 
@@ -19,7 +22,11 @@ public record MobSpawnRule(@NotNull String type, int amount, @Nullable Location 
         if (parts.length > 1) {
             for (int i = 1; i < parts.length; i++) {
                 String[] args = parts[i].trim().split("=");
-                options.put(args[0], args[1]);
+                if (args.length == 1) {
+                    options.put(args[0], "");
+                } else {
+                    options.put(args[0], args[1]);
+                }
             }
         }
 
@@ -42,7 +49,9 @@ public record MobSpawnRule(@NotNull String type, int amount, @Nullable Location 
                 Integer.parseInt(options.getOrDefault("amount", "1")),
                 location,
                 Integer.parseInt(options.getOrDefault("delay", "0")),
-                Integer.parseInt(options.getOrDefault("every", "0"))
+                Integer.parseInt(options.getOrDefault("every", "0")),
+                Integer.parseInt(options.getOrDefault("times", "0")),
+                MobOptions.parse(options)
         );
     }
 
@@ -60,18 +69,23 @@ public record MobSpawnRule(@NotNull String type, int amount, @Nullable Location 
         return every > 0;
     }
 
+    @NotNull
+    public MobOptions getMobOptions() {
+        return mobOptions;
+    }
+
     @Override
     public String toString() {
         if (location == null) {
             return String.format(
-                    "%s @amount=%d @delay=%d @every=%d",
-                    type, amount, delay, every
+                    "%s @amount=%d @delay=%d @every=%d @times=%d",
+                    type, amount, delay, every, times
             );
         }
 
         return String.format(
-                "%s %s %.2f %.2f %.2f @amount=%d @delay=%d @every=%d",
-                type, location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), amount, delay, every
+                "%s %s %.2f %.2f %.2f @amount=%d @delay=%d @every=%d @times=%d",
+                type, location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), amount, delay, every, times
         );
     }
 }

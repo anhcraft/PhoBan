@@ -1,19 +1,19 @@
 package dev.anhcraft.phoban.game;
 
 import dev.anhcraft.phoban.PhoBan;
+import dev.anhcraft.phoban.util.MobOptions;
 import dev.anhcraft.phoban.util.MobSpawnRule;
 import io.lumine.mythic.api.exceptions.InvalidMobTypeException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.attribute.Attributable;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.PriorityQueue;
-import java.util.UUID;
+import java.util.*;
 
 public class MobSpawner {
     private final PriorityQueue<SpawnTask> tasks = new PriorityQueue<>(Comparator.comparingInt(SpawnTask::getNextSpawnTick));
@@ -24,27 +24,37 @@ public class MobSpawner {
     }
 
     public void syncTickPerSec(Room room) {
+        List<SpawnTask> tasksToUpdate = new ArrayList<>();
+
         for (Iterator<SpawnTask> it = tasks.iterator(); it.hasNext(); ) {
             SpawnTask task = it.next();
             if (room.getTimeCounter() < task.nextSpawnTick) break;
+
             PhoBan.instance.debug(1, "Executing task for %s", task.rule);
-            if (!task.spawnAndSchedule(room)) {
+
+            if (task.spawnAndSchedule(room)) {
+                tasksToUpdate.add(task);
+            } else {
                 it.remove();
             }
+        }
+
+        // re-order the queue if the internal field changes
+        if (!tasksToUpdate.isEmpty()) {
+            tasks.removeAll(tasksToUpdate);
+            tasks.addAll(tasksToUpdate);
         }
     }
 
     public static class SpawnTask {
         private final MobSpawnRule rule;
         private int nextSpawnTick;
+        private int times;
 
         public SpawnTask(MobSpawnRule rule) {
             this.rule = rule;
             this.nextSpawnTick = rule.delay();
-        }
-
-        public MobSpawnRule getRule() {
-            return rule;
+            this.times = 0;
         }
 
         public int getNextSpawnTick() {
@@ -64,7 +74,7 @@ public class MobSpawner {
                 }
             }
 
-            return rule.isRepeatable();
+            return rule.isRepeatable() && (rule.times() < 1 || ++times < rule.times());
         }
 
         private void spawnAt(Location location) {
@@ -79,9 +89,25 @@ public class MobSpawner {
             } else {
                 World w = location.getWorld();
                 for (int i = 0; i < rule.amount(); i++) {
-                    w.spawnEntity(location, entityType, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                    decorate(w.spawnEntity(location, entityType, CreatureSpawnEvent.SpawnReason.CUSTOM), rule.getMobOptions());
                 }
             }
+        }
+
+        private void decorate(Entity entity, MobOptions options) {
+            if (entity instanceof Attributable a) {
+                for (Map.Entry<Attribute, Double> entry : options.getAttributes().entrySet()) {
+                    AttributeInstance attr = a.getAttribute(entry.getKey());
+                    if (attr != null) {
+                        attr.setBaseValue(entry.getValue());
+                        if (entry.getKey() == Attribute.GENERIC_MAX_HEALTH && entity instanceof Damageable) {
+                            ((LivingEntity) entity).setHealth(entry.getValue());
+                        }
+                    }
+                }
+            }
+            entity.setSilent(options.isSilent());
+            entity.setGlowing(options.isGlowing());
         }
     }
 }

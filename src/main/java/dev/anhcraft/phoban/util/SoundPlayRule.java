@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public record SoundPlayRule(@NotNull String type, @Nullable Location location, int delay, int every, float volume, float pitch) {
+public record SoundPlayRule(@NotNull String type, @Nullable Location location, int delay, int every, int times, float volume, float pitch) {
     public static SoundPlayRule parse(String rule) {
         String[] parts = rule.split("\\s*@\\s*");
 
@@ -19,7 +19,11 @@ public record SoundPlayRule(@NotNull String type, @Nullable Location location, i
         if (parts.length > 1) {
             for (int i = 1; i < parts.length; i++) {
                 String[] args = parts[i].trim().split("=");
-                options.put(args[0], args[1]);
+                if (args.length == 1) {
+                    options.put(args[0], "");
+                } else {
+                    options.put(args[0], args[1]);
+                }
             }
         }
 
@@ -42,6 +46,7 @@ public record SoundPlayRule(@NotNull String type, @Nullable Location location, i
                 location,
                 Integer.parseInt(options.getOrDefault("delay", "0")),
                 Integer.parseInt(options.getOrDefault("every", "0")),
+                Integer.parseInt(options.getOrDefault("times", "0")),
                 Float.parseFloat(options.getOrDefault("volume", "1")),
                 Float.parseFloat(options.getOrDefault("pitch", "1"))
         );
@@ -60,14 +65,14 @@ public record SoundPlayRule(@NotNull String type, @Nullable Location location, i
     public String toString() {
         if (location == null) {
             return String.format(
-                    "%s @delay=%d @every=%d",
-                    type, delay, every
+                    "%s @delay=%d @every=%d @times=%d",
+                    type, delay, every, times
             );
         }
 
         return String.format(
-                "%s %s %.2f %.2f %.2f @delay=%d @every=%d",
-                type, location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), delay, every
+                "%s %s %.2f %.2f %.2f @delay=%d @every=%d @times=%d",
+                type, location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), delay, every, times
         );
     }
 }

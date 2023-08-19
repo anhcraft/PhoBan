@@ -16,7 +16,7 @@ levels:
     respawn-chances: 3
     boss-id: "AngrySludge"
     mobs:
-      - zombie @amount=3 @every=10 @delay=10
+      - zombie @amount=3 @every=10 @delay=10 @maxHealth=100
       - zombie world 0 128 0 @amount=10
       - AngrySludge world 0 128 0 @delay=10
       - StaticallyChargedSheep world 0 128 0 @delay=10
