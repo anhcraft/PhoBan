@@ -1,7 +1,9 @@
 package dev.anhcraft.phoban.gui;
 
+import dev.anhcraft.config.bukkit.utils.ItemBuilder;
 import dev.anhcraft.palette.event.ClickEvent;
 import dev.anhcraft.palette.ui.GuiHandler;
+import dev.anhcraft.palette.util.ItemReplacer;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.config.LevelConfig;
 import dev.anhcraft.phoban.config.RoomConfig;
@@ -11,6 +13,7 @@ import dev.anhcraft.phoban.game.Stage;
 import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.Placeholder;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +32,13 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
 
     @Override
     public void onPreOpen(@NotNull Player player) {
+        replaceItem("info", new ItemReplacer() {
+            @Override
+            public @NotNull ItemBuilder apply(int i, @NotNull ItemBuilder itemBuilder) {
+                return itemBuilder.replaceDisplay(s -> PlaceholderAPI.setPlaceholders(player, s));
+            }
+        });
+
         playerData = PhoBan.instance.playerDataManager.getData(player);
 
         listen("quit", new ClickEvent() {

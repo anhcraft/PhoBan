@@ -73,6 +73,27 @@ public class MainCommand extends BaseCommand {
         sender.teleport(rc.getSpawnLocation());
     }
 
+    @Subcommand("resetdata")
+    @CommandPermission("phoban.resetdata")
+    @CommandCompletion("@players")
+    public void resetData(CommandSender sender, OfflinePlayer player) {
+        if (!player.hasPlayedBefore()) {
+            sender.sendMessage(ChatColor.RED + "This player has not played before!");
+            return;
+        }
+        if (!player.isOnline())
+            sender.sendMessage(ChatColor.YELLOW + "Fetching player data as he is currently offline...");
+
+        plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
+            if (throwable != null) {
+                sender.sendMessage(ChatColor.RED + throwable.getMessage());
+                return;
+            }
+            playerData.reset();
+            sender.sendMessage(ChatColor.GREEN + "Reset player data: " + player.getName());
+        });
+    }
+
     @Subcommand("sound")
     @CommandPermission("phoban.sound")
     public void sound(Player player) {
@@ -81,6 +102,7 @@ public class MainCommand extends BaseCommand {
 
     @Subcommand("ticket add")
     @CommandPermission("phoban.ticket.add")
+    @CommandCompletion("@players")
     public void addTicket(CommandSender sender, OfflinePlayer player, int amount) {
         if (!player.hasPlayedBefore()) {
             sender.sendMessage(ChatColor.RED + "This player has not played before!");
@@ -101,6 +123,7 @@ public class MainCommand extends BaseCommand {
 
     @Subcommand("ticket set")
     @CommandPermission("phoban.ticket.set")
+    @CommandCompletion("@players")
     public void setTicket(CommandSender sender, OfflinePlayer player, int amount) {
         if (!player.hasPlayedBefore()) {
             sender.sendMessage(ChatColor.RED + "This player has not played before!");

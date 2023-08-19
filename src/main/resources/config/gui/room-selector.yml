@@ -3,7 +3,7 @@ layout:
   - "---------"
   - "-xxxxxxx-"
   - "-xxxxxxx-"
-  - "---------"
+  - "--------I"
 components:
   "-":
     material: black_stained_glass_pane
@@ -12,6 +12,15 @@ components:
     type: room
     material: black_stained_glass_pane
     name: "&a"
+  "I":
+    type: info
+    material: book
+    name: "&aThông tin"
+    lore:
+      - "&7▪ Vé Phó bản: &f%phoban_tickets%"
+      - "&7▪ Tổng số trận: &f%phoban_total_matches%"
+      - "&7   Thắng: &f%phoban_total_wins%"
+      - "&7   Thua: &f%phoban_total_losses%"
 
 room-locked-trailer:
   available:

@@ -112,6 +112,15 @@ public class PlayerData {
         markDirty();
     }
 
+    public void reset() {
+        roomWins.clear();
+        roomHistory.clear();
+        ticket = 0;
+        lastFreeTicketTime = 0;
+        lastCreateRoomTime = 0;
+        markDirty();
+    }
+
     public void markDirty() {
         dirty.set(true);
     }

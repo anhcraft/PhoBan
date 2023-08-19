@@ -271,6 +271,8 @@ public class Room {
         for (UUID uuid : players) {
             Player p = Bukkit.getPlayer(uuid);
             if (p == null) continue;
+            p.resetPlayerTime();
+            p.resetPlayerWeather();
             p.teleportAsync(plugin.mainConfig.spawnLocation);
         }
 
