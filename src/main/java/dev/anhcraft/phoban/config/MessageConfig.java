@@ -35,4 +35,5 @@ public class MessageConfig {
     public List<String> lossMessage;
     public String insufficientTicket;
     public String freeTicketReceived;
+    public String createRoomCooldown;
 }

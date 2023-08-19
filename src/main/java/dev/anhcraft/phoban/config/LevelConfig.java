@@ -5,6 +5,7 @@ import dev.anhcraft.config.annotations.Exclude;
 import dev.anhcraft.config.annotations.PostHandler;
 import dev.anhcraft.config.annotations.Validation;
 import dev.anhcraft.phoban.util.MobSpawnRule;
+import dev.anhcraft.phoban.util.SoundPlayRule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -26,6 +27,9 @@ public class LevelConfig {
     private List<String> mobs = Collections.emptyList();
 
     @Validation(notNull = true, silent = true)
+    private List<String> sounds = Collections.emptyList();
+
+    @Validation(notNull = true, silent = true)
     private List<String> winRewards = Collections.emptyList();
 
     @Validation(notNull = true, silent = true)
@@ -37,9 +41,13 @@ public class LevelConfig {
     @Exclude
     private List<MobSpawnRule> mobSpawnRules;
 
+    @Exclude
+    private List<SoundPlayRule> soundPlayRules;
+
     @PostHandler
     private void postHandler() {
         this.mobSpawnRules = this.mobs.stream().map(MobSpawnRule::parse).toList();
+        this.soundPlayRules = this.sounds.stream().map(SoundPlayRule::parse).toList();
     }
 
     public int getTicketCost() {
@@ -74,6 +82,11 @@ public class LevelConfig {
     @NotNull
     public List<MobSpawnRule> getMobSpawnRules() {
         return mobSpawnRules;
+    }
+
+    @NotNull
+    public List<SoundPlayRule> getSoundPlayRules() {
+        return soundPlayRules;
     }
 
     @NotNull

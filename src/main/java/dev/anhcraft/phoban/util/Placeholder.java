@@ -7,6 +7,7 @@ import dev.anhcraft.phoban.game.Stage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -89,6 +90,9 @@ public class Placeholder {
             return PhoBan.instance.messageConfig.difficulty.get(v);
         } else if (v instanceof OfflinePlayer) {
             return ((OfflinePlayer) v).getName();
+        } else if (v instanceof Entity) {
+            String s = ((Entity) v).getCustomName();
+            return s == null ? ((Entity) v).getType().name() : s;
         }
         return "(object)";
     }

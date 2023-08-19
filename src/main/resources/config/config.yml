@@ -5,5 +5,6 @@ free-ticket:
 room-settings:
   waiting-time: 15
   intermission-time: 20
+room-create-cooldown: 240
 spawn-location: world 0 128 0
 debug-level: 0

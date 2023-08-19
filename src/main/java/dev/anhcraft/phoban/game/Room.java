@@ -6,9 +6,7 @@ import dev.anhcraft.phoban.config.LevelConfig;
 import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.storage.PlayerData;
-import dev.anhcraft.phoban.util.MobSpawnRule;
-import dev.anhcraft.phoban.util.Placeholder;
-import dev.anhcraft.phoban.util.WorldGuardUtils;
+import dev.anhcraft.phoban.util.*;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -20,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class Room {
@@ -32,6 +31,7 @@ public class Room {
     private final Map<UUID, Integer> separators;
     private final Map<UUID, Integer> respawnChances;
     private final MobSpawner mobSpawner;
+    private final SoundPlayer soundPlayer;
     private BoundingBox region;
     private int timeCounter;
     private boolean starting;
@@ -48,6 +48,7 @@ public class Room {
         this.separators = new HashMap<>();
         this.respawnChances = new HashMap<>();
         this.mobSpawner = new MobSpawner();
+        this.soundPlayer = new SoundPlayer();
     }
 
     public void initialize() {
@@ -105,6 +106,7 @@ public class Room {
             }
         } else if (stage == Stage.PLAYING) {
             plugin.sync(() -> mobSpawner.syncTickPerSec(this));
+            soundPlayer.asyncTickPerSec(this);
 
             if (getTimeLeft() == 0) {
                 stage = Stage.ENDING;
@@ -153,10 +155,7 @@ public class Room {
             }
 
             if (ent.getValue() == 0) {
-                plugin.sync(() -> {
-                    p.setGameMode(GameMode.SURVIVAL);
-                    p.teleportAsync(getConfig().getSpawnLocation());
-                });
+                plugin.sync(() -> syncUpdatePlayerState(p));
                 it.remove();
                 continue;
             }
@@ -177,7 +176,7 @@ public class Room {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p == null) continue;
                 plugin.playerDataManager.getData(p).requireRoomHistory(id).increasePlayTime(difficulty);
-                p.teleportAsync(getConfig().getSpawnLocation()).thenRun(() -> {
+                syncUpdatePlayerState(p).thenRun(() -> {
                     plugin.msg(p, plugin.messageConfig.gameStarted);
                     p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
                 });
@@ -187,6 +186,22 @@ public class Room {
         for (MobSpawnRule mobSpawnRule : getLevel().getMobSpawnRules()) {
             mobSpawner.schedule(mobSpawnRule);
         }
+
+        for (SoundPlayRule soundPlayRule : getLevel().getSoundPlayRules()) {
+            soundPlayer.schedule(soundPlayRule);
+        }
+    }
+
+    private CompletableFuture<Void> syncUpdatePlayerState(Player player) {
+        Location tp = stage == Stage.WAITING ? getConfig().getQueueLocation() : getConfig().getSpawnLocation();
+        return player.teleportAsync(tp).thenRun(() -> {
+            if (getConfig().getWeatherLock() != null) {
+                player.setPlayerWeather(getConfig().getWeatherLock());
+            }
+            if (getConfig().getTimeLock() >= 0) {
+                player.setPlayerTime(getConfig().getTimeLock(), false);
+            }
+        });
     }
 
     private void syncEndGame() {
@@ -196,6 +211,8 @@ public class Room {
             Player p = Bukkit.getPlayer(uuid);
             if (p == null) continue;
             p.setGameMode(GameMode.SURVIVAL);
+            p.resetPlayerWeather();
+            p.resetPlayerTime();
         }
 
         if (won) {
@@ -262,11 +279,7 @@ public class Room {
 
     boolean handleJoinRoom(Player player) {
         if (players.contains(player.getUniqueId())) {
-            if (stage == Stage.WAITING) {
-                plugin.sync(() -> player.teleportAsync(getConfig().getQueueLocation()));
-            } else {
-                plugin.sync(() -> player.teleportAsync(getConfig().getSpawnLocation()));
-            }
+            syncUpdatePlayerState(player);
             return true;
         }
 
@@ -300,7 +313,7 @@ public class Room {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 0.5f);
         }
 
-        plugin.sync(() -> player.teleportAsync(getConfig().getQueueLocation()));
+        syncUpdatePlayerState(player);
 
         return true;
     }
@@ -322,7 +335,9 @@ public class Room {
             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.5f);
         }
 
-        plugin.sync(() -> player.teleportAsync(plugin.mainConfig.spawnLocation));
+        player.resetPlayerTime();
+        player.resetPlayerWeather();
+        player.teleportAsync(plugin.mainConfig.spawnLocation);
 
         return true;
     }
@@ -334,8 +349,10 @@ public class Room {
             placeholder.add("killer", event.getKiller()).add("player", event.getKiller());
         }
 
-        for (String reward : getLevel().getBossKillRewards()) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
+        if (event.getKiller() instanceof Player) {
+            for (String reward : getLevel().getBossKillRewards()) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
+            }
         }
 
         for (UUID uuid : players) {
@@ -437,6 +454,11 @@ public class Room {
     @NotNull
     public MobSpawner getMobSpawner() {
         return mobSpawner;
+    }
+
+    @NotNull
+    public SoundPlayer getSoundPlayer() {
+        return soundPlayer;
     }
 
     public int getTimeCounter() {

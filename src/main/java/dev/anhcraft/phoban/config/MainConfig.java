@@ -19,6 +19,8 @@ public class MainConfig {
     @Path("free-ticket.every")
     public long freeTicketEvery;
 
+    public long roomCreateCooldown;
+
     @Validation(notNull = true)
     public RoomSettings roomSettings;
 

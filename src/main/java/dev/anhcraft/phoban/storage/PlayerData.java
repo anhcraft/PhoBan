@@ -28,6 +28,7 @@ public class PlayerData {
 
     private int ticket;
     private long lastFreeTicketTime;
+    private long lastCreateRoomTime;
 
     public Stream<GameHistory> streamGameHistory() {
         return roomHistory.values().stream();
@@ -99,6 +100,15 @@ public class PlayerData {
 
     public void setLastFreeTicketTime(long lastFreeTicketTime) {
         this.lastFreeTicketTime = lastFreeTicketTime;
+        markDirty();
+    }
+
+    public long getLastCreateRoomTime() {
+        return lastCreateRoomTime;
+    }
+
+    public void setLastCreateRoomTime(long lastCreateRoomTime) {
+        this.lastCreateRoomTime = lastCreateRoomTime;
         markDirty();
     }
 

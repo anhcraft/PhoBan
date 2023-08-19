@@ -8,6 +8,7 @@ import dev.anhcraft.phoban.game.Difficulty;
 import dev.anhcraft.phoban.game.RoomRequirement;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +25,10 @@ public class RoomConfig {
     private Material icon;
 
     private String requirement;
+
+    private WeatherType weatherLock;
+
+    private int timeLock = -1;
 
     @Validation(notNull = true)
     private List<String> description;
@@ -66,6 +71,15 @@ public class RoomConfig {
     @Nullable
     public RoomRequirement getRoomRequirement() {
         return roomRequirement;
+    }
+
+    @Nullable
+    public WeatherType getWeatherLock() {
+        return weatherLock;
+    }
+
+    public int getTimeLock() {
+        return timeLock;
     }
 
     @NotNull

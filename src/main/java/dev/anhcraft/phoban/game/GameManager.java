@@ -6,7 +6,9 @@ import dev.anhcraft.jvmkit.utils.FileUtil;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.gui.GuiRegistry;
+import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.ConfigHelper;
+import dev.anhcraft.phoban.util.Placeholder;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -102,6 +104,14 @@ public class GameManager {
             return;
         }
 
+        PlayerData pd = plugin.playerDataManager.getData(player);
+        long createUnlockTime = pd.getLastCreateRoomTime() + plugin.mainConfig.roomCreateCooldown * 1000L;
+        if (createUnlockTime > System.currentTimeMillis()) {
+            Placeholder.create().addTime("cooldown", (createUnlockTime - System.currentTimeMillis()) / 1000L)
+                    .message(player, plugin.messageConfig.createRoomCooldown);
+            return;
+        }
+
         // create here
         room = new Room(plugin, roomId, difficulty);
         room.initialize();
@@ -110,6 +120,7 @@ public class GameManager {
             player2room.put(player.getUniqueId(), roomId);
             roomMap.put(roomId, room);
             boss2room.put(room.getLevel().getBossId(), roomId);
+            pd.setLastCreateRoomTime(System.currentTimeMillis());
         }
     }
 

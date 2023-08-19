@@ -28,6 +28,8 @@ public class GameListener implements Listener {
     private void join(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.setGameMode(GameMode.SURVIVAL);
+        player.resetPlayerTime();
+        player.resetPlayerWeather();
         plugin.gameManager.rejoinRoom(player);
 
         if (!plugin.mainConfig.freeTicketEnabled) return;

@@ -5,6 +5,8 @@ description:
 spawn-location: world 0 128 0
 queue-location: world 0 128 0
 region: "room1"
+weather-lock: downfall
+time-lock: 13000
 levels:
   easy:
     ticket-cost: 1
@@ -19,6 +21,8 @@ levels:
       - zombie world 0 128 0 @amount=5
       - SkeletonKing world 0 128 0 @delay=10
       - SkeletalMinion world 0 128 0 @delay=10
+    sounds:
+      - ambient.basalt_deltas.loop @every=200 @delay=20
     win-rewards:
       - eco give {player} 10000
     first-win-rewards:

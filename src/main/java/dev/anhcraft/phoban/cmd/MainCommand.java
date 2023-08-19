@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import dev.anhcraft.phoban.PhoBan;
+import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.gui.GuiRegistry;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -58,6 +59,18 @@ public class MainCommand extends BaseCommand {
     public void terminate(CommandSender sender, String room) {
         plugin.gameManager.tryTerminate(room);
         sender.sendMessage(ChatColor.GREEN + "Terminated " + room);
+    }
+
+    @Subcommand("tp")
+    @CommandPermission("phoban.tp")
+    @CommandCompletion("@room")
+    public void tp(Player sender, String room) {
+        RoomConfig rc = plugin.gameManager.getRoomConfig(room);
+        if (rc == null) {
+            sender.sendMessage(ChatColor.RED + "Room not found: " + room);
+            return;
+        }
+        sender.teleport(rc.getSpawnLocation());
     }
 
     @Subcommand("sound")
