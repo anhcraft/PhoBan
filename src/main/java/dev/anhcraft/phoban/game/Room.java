@@ -65,7 +65,7 @@ public class Room {
     public void asyncTickPerSec() {
         timeCounter++;
 
-        if (getTimeCounter() > 10 && (players.isEmpty() || (!separators.isEmpty() && separators.values().stream().allMatch(i -> i < 0)))) {
+        if (getTimeCounter() > 10 && players.isEmpty()) {
             stage = Stage.ENDING;
             plugin.sync(this::syncTerminate);
             return;
@@ -108,7 +108,7 @@ public class Room {
             plugin.sync(() -> mobSpawner.syncTickPerSec(this));
             soundPlayer.asyncTickPerSec(this);
 
-            if (getTimeLeft() == 0) {
+            if (getTimeLeft() == 0 || (!separators.isEmpty() && separators.values().stream().allMatch(i -> i < 0))) {
                 stage = Stage.ENDING;
                 completeTime = timeCounter;
                 timeCounter = 0;

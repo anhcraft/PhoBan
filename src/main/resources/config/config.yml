@@ -7,4 +7,16 @@ room-settings:
   intermission-time: 20
 room-create-cooldown: 240
 spawn-location: world 0 128 0
+allowed-commands:
+  - heal
+  - feed
+  - phoban
+  - tell
+  - r
+  - w
+  - msg
+  - repair
+  - fix
+  - discord
+  - skill
 debug-level: 0

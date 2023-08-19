@@ -9,10 +9,12 @@ import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -83,6 +85,21 @@ public class GameListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     private void damage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player && plugin.gameManager.shouldBlockDamage(event.getEntity().getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    private void cmd(PlayerCommandPreprocessEvent event) {
+        Room room = plugin.gameManager.getRoom(event.getPlayer().getUniqueId());
+        if (room != null && event.getMessage().length() > 1) {
+            String msg = event.getMessage().substring(1);
+            for (String command : plugin.mainConfig.allowedCommands) {
+                if (msg.startsWith(command)) {
+                    return;
+                }
+            }
+            plugin.msg(event.getPlayer(), plugin.messageConfig.commandBlocked);
             event.setCancelled(true);
         }
     }
