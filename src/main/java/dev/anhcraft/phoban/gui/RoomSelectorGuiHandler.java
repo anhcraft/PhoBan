@@ -58,7 +58,7 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
             String roomId = roomIds.get(i);
             RoomConfig roomConfig = PhoBan.instance.gameManager.getRoomConfig(roomId);
 
-            if (roomConfig == null) {
+            if (roomConfig == null || (!roomConfig.isEnabled() && !player.hasPermission("phoban.admin"))) {
                 resetItem(slot);
                 getSlot(slot).clearEvents();
                 continue;

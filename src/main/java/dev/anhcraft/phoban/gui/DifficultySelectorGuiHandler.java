@@ -68,13 +68,16 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 continue;
             }
 
-            Difficulty difficulty = difficulties.get(i);
             RoomConfig roomConfig = PhoBan.instance.gameManager.getRoomConfig(roomId);
-            if (roomConfig == null) continue;
+            if (roomConfig == null || (!roomConfig.isEnabled() && !player.hasPermission("phoban.admin"))) {
+                GuiRegistry.openRoomSelector(player);
+                return;
+            }
+
+            Difficulty difficulty = difficulties.get(i);
             Room room = PhoBan.instance.gameManager.getRoom(roomId);
 
             if (room != null) {
-                // If room is now active, return to menu
                 GuiRegistry.openRoomSelector(player);
                 return;
             }

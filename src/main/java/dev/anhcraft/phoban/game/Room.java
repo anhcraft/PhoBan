@@ -155,7 +155,10 @@ public class Room {
             }
 
             if (ent.getValue() == 0) {
-                plugin.sync(() -> syncUpdatePlayerState(p));
+                plugin.sync(() -> {
+                    p.setGameMode(GameMode.SURVIVAL);
+                    syncUpdatePlayerState(p);
+                });
                 it.remove();
                 continue;
             }

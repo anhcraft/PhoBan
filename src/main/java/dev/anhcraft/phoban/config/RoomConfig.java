@@ -18,6 +18,8 @@ import java.util.Map;
 
 @Configurable(keyNamingStyle = Configurable.NamingStyle.TRAIN_CASE)
 public class RoomConfig {
+    private boolean enabled;
+
     @Validation(notNull = true)
     private String name;
 
@@ -51,6 +53,10 @@ public class RoomConfig {
     @PostHandler
     private void postHandler() {
         roomRequirement = requirement == null ? null : RoomRequirement.parse(requirement);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @NotNull
