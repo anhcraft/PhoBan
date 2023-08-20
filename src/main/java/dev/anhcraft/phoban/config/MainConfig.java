@@ -40,6 +40,8 @@ public class MainConfig {
     @Validation(notNull = true, notEmpty = true)
     public List<String> allowedCommands = Collections.emptyList();
 
+    public String infoItemCmd;
+
     @PostHandler
     private void postHandler() {
 

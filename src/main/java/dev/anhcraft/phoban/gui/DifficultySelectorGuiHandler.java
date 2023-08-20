@@ -14,6 +14,7 @@ import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.Placeholder;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,15 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 return itemBuilder.replaceDisplay(s -> PlaceholderAPI.setPlaceholders(player, s));
             }
         });
+
+        if (PhoBan.instance.mainConfig.infoItemCmd != null) {
+            listen("info", new ClickEvent() {
+                @Override
+                public void onClick(@NotNull InventoryClickEvent inventoryClickEvent, @NotNull Player player, int i) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Placeholder.create().add("player", player.getName()).replace(PhoBan.instance.mainConfig.infoItemCmd));
+                }
+            });
+        }
 
         playerData = PhoBan.instance.playerDataManager.getData(player);
 

@@ -21,6 +21,8 @@ components:
       - "&7▪ Tổng số trận: &f%phoban_total_matches%"
       - "&7   Thắng: &f%phoban_total_wins%"
       - "&7   Thua: &f%phoban_total_losses%"
+      - ""
+      - "&eNhấn để mở shop mua vé Phó Bản"
 
 room-locked-trailer:
   available:

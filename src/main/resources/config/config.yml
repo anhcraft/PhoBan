@@ -7,6 +7,7 @@ room-settings:
   intermission-time: 20
 room-create-cooldown: 240
 spawn-location: world 0 128 0
+info-item-cmd: dm open shopphoban {player}
 allowed-commands:
   - heal
   - feed

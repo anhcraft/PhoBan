@@ -91,6 +91,7 @@ public class GameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void cmd(PlayerCommandPreprocessEvent event) {
+        if (event.getPlayer().hasPermission("phoban.admin")) return;
         Room room = plugin.gameManager.getRoom(event.getPlayer().getUniqueId());
         if (room != null && event.getMessage().length() > 1) {
             String msg = event.getMessage().substring(1);
