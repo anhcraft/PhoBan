@@ -151,7 +151,7 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
             });
 
             getSlot(slot).setEvents((ClickEvent) (clickEvent, player1, slot1) -> {
-                PhoBan.instance.gameManager.attemptJoinRoom(player, roomId);
+                PhoBan.instance.gameManager.attemptJoinRoom(player, roomId, false);
             });
         }
     }

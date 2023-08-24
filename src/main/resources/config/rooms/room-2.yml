@@ -1,5 +1,6 @@
 name: "&aAngry Sludge"
 icon: slime_ball
+display-order: 1
 description:
   - "&7Angry Sludge là con boss cực mạnh."
 spawn-location: world 0 128 0

@@ -53,6 +53,25 @@ public class MainCommand extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Active: " + String.join(",", plugin.gameManager.getActiveRoomIds()));
     }
 
+    @Subcommand("join")
+    @CommandPermission("phoban.join")
+    @CommandCompletion("@activeRoom")
+    public void join(Player player, String room) {
+        if (plugin.gameManager.getRoom(room) == null) {
+            player.sendMessage(ChatColor.RED + "Room not created: " + room);
+            return;
+        }
+        plugin.gameManager.attemptJoinRoom(player, room, true);
+    }
+
+    @Subcommand("start")
+    @CommandPermission("phoban.start")
+    @CommandCompletion("@activeRoom")
+    public void start(CommandSender sender, String room) {
+        plugin.gameManager.tryStart(room);
+        sender.sendMessage(ChatColor.GREEN + "Started " + room);
+    }
+
     @Subcommand("terminate")
     @CommandPermission("phoban.terminate")
     @CommandCompletion("@activeRoom")

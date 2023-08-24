@@ -32,6 +32,8 @@ public class RoomConfig {
 
     private int timeLock = -1;
 
+    private int displayOrder;
+
     @Validation(notNull = true)
     private List<String> description;
 
@@ -67,6 +69,10 @@ public class RoomConfig {
     @NotNull
     public Material getIcon() {
         return icon;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
     }
 
     @NotNull

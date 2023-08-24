@@ -34,6 +34,7 @@ public class Room {
     private final SoundPlayer soundPlayer;
     private BoundingBox region;
     private int timeCounter;
+    private boolean forceStart;
     private boolean starting;
     private boolean terminating;
     private boolean won;
@@ -90,8 +91,8 @@ public class Room {
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
                 }
 
-                if (remain == 0) {
-                    if (players.size() >= getLevel().getMinPlayers()) {
+                if (forceStart || remain == 0) {
+                    if (forceStart || players.size() >= getLevel().getMinPlayers()) {
                         stage = Stage.PLAYING;
                         starting = false;
                         asyncStartGame();
@@ -171,6 +172,10 @@ public class Room {
             placeholder.actionBar(p, plugin.messageConfig.respawnCooldown);
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 0.5f);
         }
+    }
+
+    public void forceStart() {
+        forceStart = true;
     }
 
     private void asyncStartGame() {
@@ -282,24 +287,24 @@ public class Room {
         plugin.gameManager.destroyRoom(this.id);
     }
 
-    boolean handleJoinRoom(Player player) {
+    boolean handleJoinRoom(Player player, boolean force) {
         if (players.contains(player.getUniqueId())) {
             syncUpdatePlayerState(player);
             return true;
         }
 
-        if (stage != Stage.WAITING) {
+        if (stage != Stage.WAITING && !force) {
             plugin.msg(player, plugin.messageConfig.notInWaiting);
             return false;
         }
-        if (players.size() >= getLevel().getMaxPlayers()) {
+        if (players.size() >= getLevel().getMaxPlayers() && !force) {
             placeholder().message(player, plugin.messageConfig.maxPlayerReached);
             return false;
         }
 
         PlayerData playerData = plugin.playerDataManager.getData(player);
 
-        if (playerData.getTicket() < getLevel().getTicketCost()) {
+        if (playerData.getTicket() < getLevel().getTicketCost() && !force) {
             placeholder().message(player, plugin.messageConfig.insufficientTicket);
             return false;
         }

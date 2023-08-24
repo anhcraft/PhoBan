@@ -1,5 +1,6 @@
 name: "&aGod Skeleton"
 icon: bone
+display-order: 0
 description:
   - "&7God Skeleton là con boss cực mạnh."
 spawn-location: world 0 128 0

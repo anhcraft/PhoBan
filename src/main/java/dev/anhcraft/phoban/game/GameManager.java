@@ -3,6 +3,7 @@ package dev.anhcraft.phoban.game;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.anhcraft.jvmkit.utils.FileUtil;
+import dev.anhcraft.jvmkit.utils.PresentPair;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.gui.GuiRegistry;
@@ -23,7 +24,7 @@ public class GameManager {
     private final Map<UUID, String> player2room = new HashMap<>();
     private final Multimap<String, String> boss2room = HashMultimap.create();
     private final Map<String, Room> roomMap = new HashMap<>();
-    private final Map<String, RoomConfig> roomConfigMap = new HashMap<>();
+    private final Map<String, RoomConfig> roomConfigMap = new LinkedHashMap<>();
 
     public GameManager(PhoBan plugin) {
         this.plugin = plugin;
@@ -49,11 +50,19 @@ public class GameManager {
             plugin.requestConfig("rooms/room-2.yml");
         }
 
+        List<PresentPair<String, RoomConfig>> roomConfigs = new ArrayList<>();
+
         FileUtil.streamFiles(dir).forEach(file -> {
             YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
             RoomConfig roomConfig = ConfigHelper.load(RoomConfig.class, conf);
-            roomConfigMap.put(file.getName().split("\\.")[0], roomConfig);
+            roomConfigs.add(new PresentPair<>(file.getName().split("\\.")[0].replace(" ", "-"), roomConfig));
         });
+
+        roomConfigs.sort(Comparator.comparingInt(o -> o.getSecond().getDisplayOrder()));
+
+        for (PresentPair<String, RoomConfig> config : roomConfigs) {
+            roomConfigMap.put(config.getFirst(), config.getSecond());
+        }
     }
 
     public Collection<String> getRoomIds() {
@@ -106,7 +115,7 @@ public class GameManager {
 
         PlayerData pd = plugin.playerDataManager.getData(player);
         long createUnlockTime = pd.getLastCreateRoomTime() + plugin.mainConfig.roomCreateCooldown * 1000L;
-        if (createUnlockTime > System.currentTimeMillis()) {
+        if (createUnlockTime > System.currentTimeMillis() && !player.hasPermission("phoban.bypass.create-cooldown")) {
             Placeholder.create().addTime("cooldown", (createUnlockTime - System.currentTimeMillis()) / 1000L)
                     .message(player, plugin.messageConfig.createRoomCooldown);
             return;
@@ -116,7 +125,7 @@ public class GameManager {
         room = new Room(plugin, roomId, difficulty);
         room.initialize();
 
-        if(room.handleJoinRoom(player)) {
+        if(room.handleJoinRoom(player, false)) {
             player2room.put(player.getUniqueId(), roomId);
             roomMap.put(roomId, room);
             boss2room.put(room.getLevel().getBossId(), roomId);
@@ -124,7 +133,7 @@ public class GameManager {
         }
     }
 
-    public void attemptJoinRoom(Player player, String roomId) {
+    public void attemptJoinRoom(Player player, String roomId, boolean force) {
         if (player2room.containsKey(player.getUniqueId())) {
             plugin.msg(player, plugin.messageConfig.alreadyJoined);
             return;
@@ -137,7 +146,7 @@ public class GameManager {
         }
 
         // join here
-        if(room.handleJoinRoom(player)) {
+        if(room.handleJoinRoom(player, force)) {
             player2room.put(player.getUniqueId(), roomId);
         }
     }
@@ -154,7 +163,7 @@ public class GameManager {
             return;
         }
 
-        room.handleJoinRoom(player);
+        room.handleJoinRoom(player, false);
     }
 
     public void attemptLeaveRoom(Player player) {
@@ -211,6 +220,13 @@ public class GameManager {
         Room r = roomMap.get(room);
         if (r != null) {
             r.syncTerminate();
+        }
+    }
+
+    public void tryStart(String room) {
+        Room r = roomMap.get(room);
+        if (r != null) {
+            r.forceStart();
         }
     }
 }
