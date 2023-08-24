@@ -37,6 +37,7 @@ public class GameListener implements Listener {
         if (!plugin.mainConfig.freeTicketEnabled) return;
 
         plugin.sync(() -> {
+            if (!player.isOnline()) return;
             PlayerData pd = plugin.playerDataManager.getData(player);
             if (pd.getLastFreeTicketTime() + plugin.mainConfig.freeTicketEvery * 1000L < System.currentTimeMillis()) {
                 pd.addTicket(plugin.mainConfig.freeTicketAmount);
