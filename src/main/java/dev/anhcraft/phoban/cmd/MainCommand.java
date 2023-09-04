@@ -55,13 +55,16 @@ public class MainCommand extends BaseCommand {
 
     @Subcommand("join")
     @CommandPermission("phoban.join")
-    @CommandCompletion("@activeRoom")
-    public void join(Player player, String room) {
+    @CommandCompletion("@activeRoom @players")
+    public void join(Player sender, String room, @Optional Player target) {
+        if (target == null) {
+            target = sender;
+        }
         if (plugin.gameManager.getRoom(room) == null) {
-            player.sendMessage(ChatColor.RED + "Room not created: " + room);
+            sender.sendMessage(ChatColor.RED + "Room not created: " + room);
             return;
         }
-        plugin.gameManager.attemptJoinRoom(player, room, true);
+        plugin.gameManager.attemptJoinRoom(target, room, true);
     }
 
     @Subcommand("start")
