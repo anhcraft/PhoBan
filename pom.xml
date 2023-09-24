@@ -118,7 +118,7 @@
         <dependency>
             <groupId>com.github.anhcraft</groupId>
             <artifactId>palette</artifactId>
-            <version>v1.0.4</version>
+            <version>v1.0.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -136,7 +136,7 @@
         <dependency>
             <groupId>com.github.anhcraft.config</groupId>
             <artifactId>config.bukkit</artifactId>
-            <version>v1.1.7</version>
+            <version>v1.1.8</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
