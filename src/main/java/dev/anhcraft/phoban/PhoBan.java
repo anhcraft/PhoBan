@@ -22,6 +22,7 @@ import dev.anhcraft.phoban.storage.PlayerDataManager;
 import dev.anhcraft.phoban.tasks.GameTickingTask;
 import dev.anhcraft.phoban.util.ConfigHelper;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 
 public final class PhoBan extends JavaPlugin {
+    public static final GameMode SPECTATOR_GAMEMODE = GameMode.SURVIVAL;
     public static PhoBan instance;
     public PlayerDataManager playerDataManager;
     public GameManager gameManager;

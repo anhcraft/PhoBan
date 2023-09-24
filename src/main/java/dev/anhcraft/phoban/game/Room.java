@@ -164,8 +164,8 @@ public class Room {
                 continue;
             }
 
-            if (p.getGameMode() != GameMode.SPECTATOR) {
-                plugin.sync(() -> p.setGameMode(GameMode.SPECTATOR));
+            if (p.getGameMode() != PhoBan.SPECTATOR_GAMEMODE) {
+                plugin.sync(() -> p.setGameMode(PhoBan.SPECTATOR_GAMEMODE));
             }
 
             Placeholder placeholder = placeholder().add("cooldown", ent.getValue());
@@ -387,7 +387,7 @@ public class Room {
             return;
         }
 
-        player.setGameMode(GameMode.SPECTATOR);
+        player.setGameMode(PhoBan.SPECTATOR_GAMEMODE);
         int chances = respawnChances.getOrDefault(player.getUniqueId(), 0);
 
         if (chances >= getLevel().getRespawnChances()) {
