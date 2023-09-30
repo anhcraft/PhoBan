@@ -7,6 +7,7 @@ import dev.anhcraft.phoban.config.RoomConfig;
 import dev.anhcraft.phoban.storage.GameHistory;
 import dev.anhcraft.phoban.storage.PlayerData;
 import dev.anhcraft.phoban.util.*;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -22,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class Room {
-    private static final Predicate<Entity> ENTITY_FILTER = e -> e instanceof Monster || e instanceof Item || e instanceof Projectile;
+    private static final Predicate<Entity> ENTITY_FILTER = e -> e instanceof Creature || e instanceof Item || e instanceof Projectile;
     private final PhoBan plugin;
     private final String id;
     private final Difficulty difficulty;
@@ -57,10 +58,11 @@ public class Room {
         stage = Stage.WAITING;
         timeCounter = -1;
         region = WorldGuardUtils.getBoundingBox(getConfig().getRegion(), getConfig().getWorld());
-        completeTime = 0;
         if (region != null) {
-            plugin.sync(() -> getConfig().getWorld().getNearbyEntities(region, ENTITY_FILTER).forEach(Entity::remove));
+            plugin.debug(2, "Room %s has region %s", id, region.toString());
         }
+        completeTime = 0;
+        plugin.sync(this::cleanMobs);
     }
 
     public void asyncTickPerSec() {
@@ -272,9 +274,7 @@ public class Room {
         if (terminating) return;
         terminating = true;
 
-        if (getRegion() != null) {
-            getConfig().getWorld().getNearbyEntities(getRegion(), ENTITY_FILTER).forEach(Entity::remove);
-        }
+        cleanMobs();
 
         for (UUID uuid : players) {
             Player p = Bukkit.getPlayer(uuid);
@@ -285,6 +285,19 @@ public class Room {
         }
 
         plugin.gameManager.destroyRoom(this.id);
+    }
+
+    private void cleanMobs() {
+        if (getRegion() != null) {
+            Collection<Entity> mobs = getConfig().getWorld().getNearbyEntities(getRegion(), ENTITY_FILTER);
+            for (Entity mob : mobs) {
+                if (MythicBukkit.inst().getAPIHelper().isMythicMob(mob)) {
+                    plugin.debug(2, "Removing MM %s", MythicBukkit.inst().getAPIHelper().getMythicMobInstance(mob).getMobType());
+                }
+                mob.remove();
+            }
+            plugin.debug(1, "Removed %d mobs in room %s", mobs.size(), id);
+        }
     }
 
     boolean handleJoinRoom(Player player, boolean force) {

@@ -211,7 +211,7 @@ public class GameManager {
     public boolean shouldBlockDamage(UUID uniqueId) {
         Room room = getRoom(uniqueId);
         if (room != null) {
-            return room.getStage() != Stage.PLAYING;
+            return room.getStage() != Stage.PLAYING || room.getSeparators().contains(uniqueId);
         }
         return false;
     }
