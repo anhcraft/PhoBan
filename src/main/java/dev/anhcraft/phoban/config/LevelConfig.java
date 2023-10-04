@@ -1,15 +1,15 @@
 package dev.anhcraft.phoban.config;
 
-import dev.anhcraft.config.annotations.Configurable;
-import dev.anhcraft.config.annotations.Exclude;
-import dev.anhcraft.config.annotations.PostHandler;
-import dev.anhcraft.config.annotations.Validation;
+import dev.anhcraft.config.annotations.*;
 import dev.anhcraft.phoban.util.MobSpawnRule;
 import dev.anhcraft.phoban.util.SoundPlayRule;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Configurable(keyNamingStyle = Configurable.NamingStyle.TRAIN_CASE)
 public class LevelConfig {
@@ -20,22 +20,27 @@ public class LevelConfig {
     private int respawnTime;
     private int respawnChances;
 
-    @Validation(notNull = true)
+    @Nullable
     private String bossId;
 
-    @Validation(notNull = true, silent = true)
+    @Optional
+    private Map<String, Integer> objectives = new HashMap<>();
+
+    private boolean allowTimeout;
+
+    @Optional
     private List<String> mobs = Collections.emptyList();
 
-    @Validation(notNull = true, silent = true)
+    @Optional
     private List<String> sounds = Collections.emptyList();
 
-    @Validation(notNull = true, silent = true)
+    @Optional
     private List<String> winRewards = Collections.emptyList();
 
-    @Validation(notNull = true, silent = true)
+    @Optional
     private List<String> firstWinRewards = Collections.emptyList();
 
-    @Validation(notNull = true, silent = true)
+    @Optional
     private List<String> bossKillRewards = Collections.emptyList();
 
     @Exclude
@@ -48,6 +53,9 @@ public class LevelConfig {
     private void postHandler() {
         this.mobSpawnRules = this.mobs.stream().map(MobSpawnRule::parse).toList();
         this.soundPlayRules = this.sounds.stream().map(SoundPlayRule::parse).toList();
+        if (this.bossId != null) {
+            this.objectives.put(this.bossId, 1);
+        }
     }
 
     public int getTicketCost() {
@@ -75,8 +83,8 @@ public class LevelConfig {
     }
 
     @NotNull
-    public String getBossId() {
-        return bossId;
+    public Map<String, Integer> getObjectives() {
+        return objectives;
     }
 
     @NotNull
@@ -102,5 +110,9 @@ public class LevelConfig {
     @NotNull
     public List<String> getBossKillRewards() {
         return bossKillRewards;
+    }
+
+    public boolean isAllowTimeout() {
+        return allowTimeout;
     }
 }

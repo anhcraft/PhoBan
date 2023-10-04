@@ -128,7 +128,9 @@ public class GameManager {
         if(room.handleJoinRoom(player, false)) {
             player2room.put(player.getUniqueId(), roomId);
             roomMap.put(roomId, room);
-            boss2room.put(room.getLevel().getBossId(), roomId);
+            for (String s : room.getLevel().getObjectives().keySet()) {
+                boss2room.put(s, roomId);
+            }
             pd.setLastCreateRoomTime(System.currentTimeMillis());
         }
     }
@@ -194,7 +196,7 @@ public class GameManager {
                 continue;
             }
 
-            if (r.hasLocation(event.getEntity().getLocation()) && r.getLevel().getBossId().equals(event.getMobType().getInternalName())) {
+            if (r.hasLocation(event.getEntity().getLocation())) {
                 r.handleBossDeath(event);
                 break;
             }

@@ -40,6 +40,7 @@ public class Room {
     private boolean terminating;
     private boolean won;
     private int completeTime;
+    private Map<String, Integer> objectiveRequirements;
 
     public Room(PhoBan plugin, String id, Difficulty difficulty) {
         this.plugin = plugin;
@@ -63,6 +64,7 @@ public class Room {
         }
         completeTime = 0;
         plugin.sync(this::cleanMobs);
+        objectiveRequirements = new HashMap<>(getLevel().getObjectives());
     }
 
     public void asyncTickPerSec() {
@@ -115,6 +117,7 @@ public class Room {
                 stage = Stage.ENDING;
                 completeTime = timeCounter;
                 timeCounter = 0;
+                won = objectiveRequirements.isEmpty() || getLevel().isAllowTimeout();
                 plugin.sync(this::syncEndGame);
             }
         } else if (stage == Stage.ENDING && !terminating) {
@@ -366,6 +369,14 @@ public class Room {
     }
 
     public void handleBossDeath(MythicMobDeathEvent event) {
+        Integer count = objectiveRequirements.get(event.getMobType().getInternalName());
+        if (count == null || count <= 0) return;
+        if (count == 1) {
+            objectiveRequirements.remove(event.getMobType().getInternalName());
+        } else {
+            objectiveRequirements.put(event.getMobType().getInternalName(), count - 1);
+        }
+
         Placeholder placeholder = placeholder().add("boss", event.getMob().getDisplayName());
 
         if (event.getKiller() != null) {
@@ -384,11 +395,13 @@ public class Room {
             placeholder.message(p, plugin.messageConfig.killMessage);
         }
 
-        stage = Stage.ENDING;
-        completeTime = timeCounter;
-        timeCounter = 0;
-        won = true;
-        syncEndGame();
+        if (objectiveRequirements.isEmpty()) {
+            stage = Stage.ENDING;
+            completeTime = timeCounter;
+            timeCounter = 0;
+            won = true;
+            syncEndGame();
+        }
     }
 
     public void handlePlayerDeath(PlayerDeathEvent event) {

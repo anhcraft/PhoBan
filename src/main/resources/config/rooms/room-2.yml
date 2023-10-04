@@ -30,7 +30,8 @@ levels:
     playing-time: 1400
     respawn-time: 10
     respawn-chances: 2
-    boss-id: "AngrySludge"
+    objectives:
+      AngrySludge: 1
     mobs:
       - zombie @amount=5 @every=10 @delay=10
       - zombie world 0 128 0 @amount=15
@@ -45,7 +46,8 @@ levels:
     playing-time: 1200
     respawn-time: 20
     respawn-chances: 1
-    boss-id: "AngrySludge"
+    objectives:
+      AngrySludge: 1
     mobs:
       - zombie @amount=5 @every=5 @delay=10
       - zombie world 0 128 0 @amount=30
