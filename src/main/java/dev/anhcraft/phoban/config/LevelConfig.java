@@ -28,6 +28,8 @@ public class LevelConfig {
 
     private boolean allowTimeout;
 
+    private String[] joinMessages;
+
     @Optional
     private List<String> mobs = Collections.emptyList();
 
@@ -114,5 +116,10 @@ public class LevelConfig {
 
     public boolean isAllowTimeout() {
         return allowTimeout;
+    }
+
+    @Nullable
+    public String[] getJoinMessages() {
+        return joinMessages;
     }
 }

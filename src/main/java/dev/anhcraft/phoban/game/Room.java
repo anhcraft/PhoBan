@@ -190,6 +190,11 @@ public class Room {
                 if (p == null) continue;
                 plugin.playerDataManager.getData(p).requireRoomHistory(id).increasePlayTime(difficulty);
                 syncUpdatePlayerState(p).thenRun(() -> {
+                    if (getLevel().getJoinMessages() != null){
+                        for (String s : getLevel().getJoinMessages()) {
+                            plugin.msg(p, s);
+                        }
+                    }
                     plugin.msg(p, plugin.messageConfig.gameStarted);
                     p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
                 });
@@ -305,7 +310,13 @@ public class Room {
 
     boolean handleJoinRoom(Player player, boolean force) {
         if (players.contains(player.getUniqueId())) {
-            syncUpdatePlayerState(player);
+            syncUpdatePlayerState(player).thenRun(() -> {
+                if (getLevel().getJoinMessages() != null){
+                    for (String s : getLevel().getJoinMessages()) {
+                        plugin.msg(player, s);
+                    }
+                }
+            });
             return true;
         }
 
@@ -520,5 +531,9 @@ public class Room {
             i = plugin.mainConfig.roomSettings.waitingTime - timeCounter;
         }
         return Math.max(0, i);
+    }
+
+    public Map<String, Integer> getObjectiveRequirements() {
+        return objectiveRequirements;
     }
 }

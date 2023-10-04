@@ -20,6 +20,7 @@ public class PlaceholderBridge extends PlaceholderExpansion {
     private static final String ROOM_SEPARATORS = "room_separators";
     private static final String ROOM_RESPAWNS = "room_respawns";
     private static final String ROOM_MAX_RESPAWNS = "room_max_respawns";
+    private static final String ROOM_OBJECTIVE_LEFT = "room_objective_left";
     private static final String ROOM_TIME = "room_time";
     private static final String ROOM_TIME_LEFT = "room_time_left";
     private static final String TICKETS = "tickets";
@@ -106,6 +107,10 @@ public class PlaceholderBridge extends PlaceholderExpansion {
             case ROOM_TIME_LEFT -> {
                 Room r = plugin.gameManager.getRoom(player.getUniqueId());
                 return r == null ? "" : TimeUtils.format(r.getTimeLeft());
+            }
+            case ROOM_OBJECTIVE_LEFT -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "0" : String.valueOf(r.getObjectiveRequirements().values().stream().mapToInt(Integer::intValue).sum());
             }
             case TICKETS -> {
                 return String.valueOf(plugin.playerDataManager.getData((Player) player).getTicket());
