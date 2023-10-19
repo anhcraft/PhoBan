@@ -5,6 +5,7 @@ import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.config.RoomConfig;
+import dev.anhcraft.phoban.game.Room;
 import dev.anhcraft.phoban.gui.GuiRegistry;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -42,6 +43,10 @@ public class MainCommand extends BaseCommand {
     @Subcommand("reload")
     @CommandPermission("phoban.reload")
     public void reload(CommandSender sender) {
+        if (!plugin.gameManager.getActiveRoomIds().isEmpty()) {
+            sender.sendMessage(ChatColor.RED + "There are active rooms in playing!");
+            return;
+        }
         plugin.reload();
         sender.sendMessage(ChatColor.GREEN + "Reloaded the plugin!");
     }
@@ -56,9 +61,14 @@ public class MainCommand extends BaseCommand {
     @Subcommand("join")
     @CommandPermission("phoban.join")
     @CommandCompletion("@activeRoom @players")
-    public void join(Player sender, String room, @Optional Player target) {
+    public void join(CommandSender sender, String room, @Optional Player target) {
         if (target == null) {
-            target = sender;
+            if (sender instanceof Player)
+                target = (Player) sender;
+            else {
+                sender.sendMessage(ChatColor.RED + "You must specify a player!");
+                return;
+            }
         }
         if (plugin.gameManager.getRoom(room) == null) {
             sender.sendMessage(ChatColor.RED + "Room not created: " + room);
@@ -83,20 +93,49 @@ public class MainCommand extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Terminated " + room);
     }
 
+    @Subcommand("reset respawn")
+    @CommandPermission("phoban.reset.respawn")
+    @CommandCompletion("@activeRoom @players")
+    public void resetRespawn(CommandSender sender, String room, @Optional Player target) {
+        if (target == null) {
+            if (sender instanceof Player)
+                target = (Player) sender;
+            else {
+                sender.sendMessage(ChatColor.RED + "You must specify a player!");
+                return;
+            }
+        }
+        Room r = plugin.gameManager.getRoom(room);
+        if (r == null) {
+            sender.sendMessage(ChatColor.RED + "Room not created: " + room);
+            return;
+        }
+        r.getRespawnChances().remove(target.getUniqueId());
+        sender.sendMessage(ChatColor.GREEN + "Reset respawn chances for " + target.getName());
+    }
+
     @Subcommand("tp")
     @CommandPermission("phoban.tp")
-    @CommandCompletion("@room")
-    public void tp(Player sender, String room) {
+    @CommandCompletion("@room @players")
+    public void tp(CommandSender sender, String room, @Optional Player target) {
+        if (target == null) {
+            if (sender instanceof Player)
+                target = (Player) sender;
+            else {
+                sender.sendMessage(ChatColor.RED + "You must specify a player!");
+                return;
+            }
+        }
         RoomConfig rc = plugin.gameManager.getRoomConfig(room);
         if (rc == null) {
             sender.sendMessage(ChatColor.RED + "Room not found: " + room);
             return;
         }
-        sender.teleport(rc.getSpawnLocation());
+        target.teleport(rc.getSpawnLocation());
     }
 
-    @Subcommand("resetdata")
-    @CommandPermission("phoban.resetdata")
+    @Subcommand("reset data")
+    @CommandPermission("phoban.reset.data")
     @CommandCompletion("@players")
     public void resetData(CommandSender sender, OfflinePlayer player) {
         if (!player.hasPlayedBefore()) {
