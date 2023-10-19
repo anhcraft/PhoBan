@@ -388,25 +388,22 @@ public class Room {
             objectiveRequirements.put(event.getMobType().getInternalName(), count - 1);
         }
 
-        Placeholder placeholder = placeholder().add("boss", event.getMob().getDisplayName());
-
-        if (event.getKiller() != null) {
-            placeholder.add("killer", event.getKiller()).add("player", event.getKiller());
-        }
-
         if (event.getKiller() instanceof Player) {
+            Placeholder placeholder = placeholder()
+                    .add("boss", event.getMob().getDisplayName())
+                    .add("killer", event.getKiller())
+                    .add("player", event.getKiller());
             for (String reward : getLevel().getBossKillRewards()) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder.replace(reward));
             }
+            for (UUID uuid : players) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p == null) continue;
+                placeholder.message(p, plugin.messageConfig.killMessage);
+            }
         }
 
-        for (UUID uuid : players) {
-            Player p = Bukkit.getPlayer(uuid);
-            if (p == null) continue;
-            placeholder.message(p, plugin.messageConfig.killMessage);
-        }
-
-        if (objectiveRequirements.isEmpty()) {
+        if (objectiveRequirements.isEmpty() && !getLevel().isAllowOverachieve()) {
             stage = Stage.ENDING;
             completeTime = timeCounter;
             timeCounter = 0;

@@ -28,6 +28,8 @@ public class LevelConfig {
 
     private boolean allowTimeout;
 
+    private boolean allowOverachieve;
+
     private String[] joinMessages;
 
     @Optional
@@ -116,6 +118,10 @@ public class LevelConfig {
 
     public boolean isAllowTimeout() {
         return allowTimeout;
+    }
+
+    public boolean isAllowOverachieve() {
+        return allowOverachieve;
     }
 
     @Nullable
