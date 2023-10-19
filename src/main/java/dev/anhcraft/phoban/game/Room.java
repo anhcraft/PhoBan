@@ -455,7 +455,7 @@ public class Room {
 
     @NotNull
     public LevelConfig getLevel() {
-        return getConfig().getLevel(difficulty);
+        return Objects.requireNonNull(getConfig().getLevel(difficulty));
     }
 
     @NotNull
@@ -523,7 +523,7 @@ public class Room {
         if (stage == Stage.ENDING) {
             i = plugin.mainConfig.roomSettings.intermissionTime - timeCounter;
         } else if (stage == Stage.PLAYING) {
-            i = getConfig().getLevel(difficulty).getPlayingTime() - timeCounter;
+            i = getLevel().getPlayingTime() - timeCounter;
         } else if (stage == Stage.WAITING) {
             i = plugin.mainConfig.roomSettings.waitingTime - timeCounter;
         }

@@ -92,6 +92,14 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 return;
             }
 
+            LevelConfig levelConfig = roomConfig.getLevel(difficulty);
+
+            if (levelConfig == null) {
+                resetItem(slot);
+                getSlot(slot).clearEvents();
+                continue;
+            }
+
             if (difficulty.ordinal() > 0 && !playerData.hasWonRoom(roomId, Difficulty.values()[difficulty.ordinal()-1])) {
                 Placeholder placeholder = Placeholder.create()
                         .add("dungeon", roomConfig.getName())
@@ -108,7 +116,6 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 continue;
             }
 
-            LevelConfig levelConfig = roomConfig.getLevel(difficulty);
             GameHistory history = playerData.getGameHistory(roomId);
             Placeholder placeholder = Placeholder.create()
                     .add("dungeon", roomConfig.getName())

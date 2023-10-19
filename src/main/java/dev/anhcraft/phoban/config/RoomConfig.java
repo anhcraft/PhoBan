@@ -119,6 +119,7 @@ public class RoomConfig {
         return levels;
     }
 
+    @Nullable
     public LevelConfig getLevel(Difficulty difficulty) {
         return levels.get(difficulty);
     }
