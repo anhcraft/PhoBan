@@ -123,4 +123,8 @@ public class RoomConfig {
     public LevelConfig getLevel(Difficulty difficulty) {
         return levels.get(difficulty);
     }
+
+    public void setEnabled(boolean b) {
+        enabled = b;
+    }
 }

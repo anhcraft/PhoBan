@@ -51,6 +51,32 @@ public class MainCommand extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Reloaded the plugin!");
     }
 
+    @Subcommand("enable")
+    @CommandPermission("phoban.enable")
+    @CommandCompletion("@room")
+    public void enable(CommandSender sender, String room) {
+        RoomConfig rc = plugin.gameManager.getRoomConfig(room);
+        if (rc == null) {
+            sender.sendMessage(ChatColor.RED + "Room not found: " + room);
+            return;
+        }
+        rc.setEnabled(true);
+        sender.sendMessage(ChatColor.GREEN + "Enabled " + room);
+    }
+
+    @Subcommand("disable")
+    @CommandPermission("phoban.disable")
+    @CommandCompletion("@room")
+    public void disable(CommandSender sender, String room) {
+        RoomConfig rc = plugin.gameManager.getRoomConfig(room);
+        if (rc == null) {
+            sender.sendMessage(ChatColor.RED + "Room not found: " + room);
+            return;
+        }
+        rc.setEnabled(false);
+        sender.sendMessage(ChatColor.YELLOW + "Disabled " + room);
+    }
+
     @Subcommand("list")
     @CommandPermission("phoban.list")
     public void list(CommandSender sender) {
