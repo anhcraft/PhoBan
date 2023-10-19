@@ -96,7 +96,7 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                 Difficulty difficulty = room.getDifficulty();
 
                 placeholder.add("currentPlayers", room.getPlayers().size())
-                        .add("maxPlayers", room.getLevel().getMaxPlayers())
+                        .add("maxPlayers", room.getLevel().isAllowOverfull() ? "∞" : room.getLevel().getMaxPlayers())
                         .add("ticketCost", room.getLevel().getTicketCost())
                         .add("difficulty", room.getDifficulty())
                         .addTime("timeLeft", room.getTimeLeft());
@@ -145,7 +145,11 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                 itemBuilder.material(roomConfig.getIcon());
                 itemBuilder.name(roomConfig.getName());
                 itemBuilder.lore(roomConfig.getDescription());
-                itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLoreTrailer.get(stage));
+                if (stage == Stage.PLAYING && room.getLevel().isAllowOverfull()) {
+                    itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLoreTrailerOverfull);
+                } else {
+                    itemBuilder.lore().addAll(GuiRegistry.ROOM_SELECTOR.roomLoreTrailer.get(stage));
+                }
                 return placeholder.replace(itemBuilder);
             });
 

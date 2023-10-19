@@ -127,7 +127,7 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                     .addUnknown("bestCompleteTime")
                     .add("difficulty", difficulty)
                     .add("currentPlayers", 0)
-                    .add("maxPlayers", levelConfig.getMaxPlayers())
+                    .add("maxPlayers", levelConfig.isAllowOverfull() ? "∞" : levelConfig.getMaxPlayers())
                     .add("ticketCost", levelConfig.getTicketCost())
                     .add("difficulty", difficulty)
                     .add("stage", Stage.AVAILABLE);

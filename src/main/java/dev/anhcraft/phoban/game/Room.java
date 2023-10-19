@@ -324,7 +324,7 @@ public class Room {
             plugin.msg(player, plugin.messageConfig.notInWaiting);
             return false;
         }
-        if (players.size() >= getLevel().getMaxPlayers() && !force) {
+        if (players.size() >= getLevel().getMaxPlayers() && !force && !getLevel().isAllowOverfull()) {
             placeholder().message(player, plugin.messageConfig.maxPlayerReached);
             return false;
         }
@@ -438,7 +438,7 @@ public class Room {
         return Placeholder.create()
                 .add("dungeon", getConfig().getName())
                 .add("currentPlayers", players.size())
-                .add("maxPlayers", getLevel().getMaxPlayers())
+                .add("maxPlayers", getLevel().isAllowOverfull() ? "∞" : getLevel().getMaxPlayers())
                 .add("difficulty", difficulty)
                 .add("stage", stage);
     }

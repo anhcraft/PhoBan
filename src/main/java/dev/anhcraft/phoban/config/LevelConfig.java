@@ -30,6 +30,8 @@ public class LevelConfig {
 
     private boolean allowOverachieve;
 
+    private boolean allowOverfull;
+
     private String[] joinMessages;
 
     @Optional
@@ -122,6 +124,10 @@ public class LevelConfig {
 
     public boolean isAllowOverachieve() {
         return allowOverachieve;
+    }
+
+    public boolean isAllowOverfull() {
+        return allowOverfull;
     }
 
     @Nullable

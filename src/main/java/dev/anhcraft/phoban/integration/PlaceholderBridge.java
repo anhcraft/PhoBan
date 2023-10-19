@@ -82,7 +82,7 @@ public class PlaceholderBridge extends PlaceholderExpansion {
             }
             case ROOM_MAX_PLAYERS -> {
                 Room r = plugin.gameManager.getRoom(player.getUniqueId());
-                return r == null ? "" : String.valueOf(r.getLevel().getMaxPlayers());
+                return r == null ? "" : (r.getLevel().isAllowOverfull() ? "∞" : String.valueOf(r.getLevel().getMaxPlayers()));
             }
             case ROOM_MIN_PLAYERS -> {
                 Room r = plugin.gameManager.getRoom(player.getUniqueId());

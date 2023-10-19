@@ -11,5 +11,7 @@ import java.util.Map;
 public class RoomSelectorGui extends Gui {
     public Map<Stage, List<String>> roomLoreTrailer;
 
+    public List<String> roomLoreTrailerOverfull;
+
     public Map<Stage, List<String>> roomLockedTrailer;
 }
