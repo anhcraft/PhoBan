@@ -86,6 +86,7 @@ room-lore-trailer:
     - ""
     - "&e> Nhấn để tham gia"
     - "&7&o  Tiêu hao &c&o{ticketCost}&7&o vé"
+    - "&7&o  CHÚ Ý: Làm trống túi để nhận quà thưởng!"
   playing:
     - ""
     - "&eThông tin:"

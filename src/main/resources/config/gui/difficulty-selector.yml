@@ -1,7 +1,7 @@
 title: "&0&lChọn độ khó"
 layout:
   - "---------"
-  - "---xxx---"
+  - "--xxxxx--"
   - "---------"
   - "----q---I"
 components:
@@ -11,7 +11,7 @@ components:
   "x":
     type: difficulty
     material: black_stained_glass_pane
-    name: "&a{dungeon} &7({difficulty}&7)"
+    name: "&a"
   "q":
     type: quit
     material: barrier
@@ -30,6 +30,8 @@ components:
       - "&7   Thua: &f%phoban_total_losses%"
       - ""
       - "&eNhấn để mở shop mua vé Phó Bản"
+
+difficulty-name: "&a{dungeon} &7({difficulty}&7)"
 
 room-locked-trailer:
   - ""
@@ -51,3 +53,4 @@ room-lore-trailer:
   - ""
   - "&e> Nhấn để tạo phòng"
   - "&7&o  Tiêu hao &c&o{ticketCost}&7&o vé"
+  - "&7&o  CHÚ Ý: Làm trống túi để nhận quà thưởng!"

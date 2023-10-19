@@ -8,6 +8,7 @@ difficulty:
   easy: "&aDễ"
   medium: "&eTrung Bình"
   hard: "&cKhó"
+  extreme: "&5Thách Đấu"
 already-joined: "&cBạn đang tham gia phó bản! &7Để thoát, dùng /phoban quit"
 not-joined: "&cBạn chưa tham gia phó bản!"
 not-in-waiting: "&cBạn không thể tham gia phòng này ngay bây giờ!"

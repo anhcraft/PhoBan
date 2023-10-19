@@ -10,4 +10,6 @@ public class DifficultySelectorGui extends Gui {
     public List<String> roomLoreTrailer;
 
     public List<String> roomLockedTrailer;
+
+    public String difficultyName;
 }
