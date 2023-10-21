@@ -4,5 +4,6 @@ public enum Difficulty {
     EASY,
     MEDIUM,
     HARD,
-    EXTREME
+    EXTREME,
+    CHALLENGE
 }

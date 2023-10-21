@@ -26,6 +26,9 @@ public class PlayerData {
     @Validation(notNull = true, silent = true)
     private Map<String, GameHistory> roomHistory = new HashMap<>();
 
+    @Validation(notNull = true, silent = true)
+    private Map<String, Integer> challengeLevels = new HashMap<>();
+
     private int ticket;
     private long lastFreeTicketTime;
     private long lastCreateRoomTime;
@@ -112,9 +115,19 @@ public class PlayerData {
         markDirty();
     }
 
+    public int getChallengeLevel(String room) {
+        return challengeLevels.getOrDefault(room, 0);
+    }
+
+    public void increaseChallengeLevel(String room) {
+        challengeLevels.put(room, challengeLevels.getOrDefault(room, 0) + 1);
+        markDirty();
+    }
+
     public void reset() {
         roomWins.clear();
         roomHistory.clear();
+        challengeLevels.clear();
         ticket = 0;
         lastFreeTicketTime = 0;
         lastCreateRoomTime = 0;

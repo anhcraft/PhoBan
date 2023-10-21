@@ -13,7 +13,16 @@ public record MythicMob(String id, int level) {
         return new MythicMob(parts[0], Integer.parseInt(parts[1]));
     }
 
+    public MythicMob raiseLevel(int delta) {
+        return new MythicMob(id, level + delta);
+    }
+
     public void spawn(Location location) throws InvalidMobTypeException {
         MythicBukkit.inst().getAPIHelper().spawnMythicMob(id, location, level);
+    }
+
+    @Override
+    public String toString() {
+        return id + ":" + level;
     }
 }

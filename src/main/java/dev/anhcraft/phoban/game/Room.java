@@ -34,12 +34,14 @@ public class Room {
     private final MobSpawner mobSpawner;
     private final SoundPlayer soundPlayer;
     private BoundingBox region;
+    private int challengeLevel;
     private int timeCounter;
     private boolean forceStart;
     private boolean starting;
     private boolean terminating;
     private boolean won;
     private int completeTime;
+    private List<MobSpawnRule> mobSpawnRules;
     private Map<String, Integer> objectiveRequirements;
 
     public Room(PhoBan plugin, String id, Difficulty difficulty) {
@@ -52,19 +54,39 @@ public class Room {
         this.respawnChances = new HashMap<>();
         this.mobSpawner = new MobSpawner();
         this.soundPlayer = new SoundPlayer();
+        this.mobSpawnRules = new ArrayList<>();
+        this.objectiveRequirements = new HashMap<>();
     }
 
-    public void initialize() {
+    public void initialize(int challenge) {
         if (stage != Stage.AVAILABLE) return;
         stage = Stage.WAITING;
         timeCounter = -1;
-        region = WorldGuardUtils.getBoundingBox(getConfig().getRegion(), getConfig().getWorld());
-        if (region != null) {
-            plugin.debug(2, "Room %s has region %s", id, region.toString());
-        }
         completeTime = 0;
+        challengeLevel = difficulty == Difficulty.CHALLENGE ? challenge : 0;
+        region = WorldGuardUtils.getBoundingBox(getConfig().getRegion(), getConfig().getWorld());
+        if (region != null)
+            plugin.debug(2, "Room %s has region %s", id, region.toString());
         plugin.sync(this::cleanMobs);
-        objectiveRequirements = new HashMap<>(getLevel().getObjectives());
+
+        for (Map.Entry<String, Integer> e : getLevel().getObjectives().entrySet()) {
+            if (e.getKey().contains(":")) {
+                // OBJECTIVES MUST NOT HAVE LEVEL
+                // Some bosses have special ability to level up and that can break the objectives system
+                plugin.getLogger().warning(String.format("Room %s should not have objective %s with level specified", id, e.getKey()));
+                objectiveRequirements.put(e.getKey().split(":")[0], e.getValue());
+            } else {
+                objectiveRequirements.put(e.getKey(), e.getValue());
+            }
+        }
+        for (String s : objectiveRequirements.keySet())
+            plugin.debug(2, "Room %s requires %s", id, s);
+
+        if (difficulty == Difficulty.CHALLENGE) {
+            for (MobSpawnRule mobSpawnRule : getLevel().getMobSpawnRules()) {
+                mobSpawnRules.add(mobSpawnRule.raiseLevel(challenge));
+            }
+        } else mobSpawnRules.addAll(getLevel().getMobSpawnRules());
     }
 
     public void asyncTickPerSec() {
@@ -201,7 +223,7 @@ public class Room {
             }
         });
 
-        for (MobSpawnRule mobSpawnRule : getLevel().getMobSpawnRules()) {
+        for (MobSpawnRule mobSpawnRule : mobSpawnRules) {
             mobSpawner.schedule(mobSpawnRule);
         }
 
@@ -240,6 +262,7 @@ public class Room {
 
                 PlayerData data = plugin.playerDataManager.getData(p);
                 data.addWonRoom(id, difficulty);
+                if (difficulty == Difficulty.CHALLENGE) data.increaseChallengeLevel(id);
 
                 GameHistory gameHistory = data.requireRoomHistory(id);
                 int newWinTime = gameHistory.increaseWinTime(difficulty);
@@ -293,6 +316,10 @@ public class Room {
         }
 
         plugin.gameManager.destroyRoom(this.id);
+    }
+
+    public void forceEnd() {
+        timeCounter += getTimeLeft();
     }
 
     private void cleanMobs() {
@@ -380,12 +407,14 @@ public class Room {
     }
 
     public void handleBossDeath(MythicMobDeathEvent event) {
-        Integer count = objectiveRequirements.get(event.getMobType().getInternalName());
+        String mobId = event.getMobType().getInternalName();
+        plugin.debug(2, "Room %s has boss %s killed", id, mobId);
+        Integer count = objectiveRequirements.get(mobId); // objectives must not have level
         if (count == null || count <= 0) return;
         if (count == 1) {
-            objectiveRequirements.remove(event.getMobType().getInternalName());
+            objectiveRequirements.remove(mobId);
         } else {
-            objectiveRequirements.put(event.getMobType().getInternalName(), count - 1);
+            objectiveRequirements.put(mobId, count - 1);
         }
 
         if (event.getKiller() instanceof Player) {
@@ -440,6 +469,7 @@ public class Room {
                 .add("currentPlayers", players.size())
                 .add("maxPlayers", getLevel().isAllowOverfull() ? "∞" : getLevel().getMaxPlayers())
                 .add("difficulty", difficulty)
+                .add("challengeLevel", difficulty == Difficulty.CHALLENGE ? Integer.toString(challengeLevel+1) : "")
                 .add("stage", stage);
     }
 
@@ -532,5 +562,9 @@ public class Room {
 
     public Map<String, Integer> getObjectiveRequirements() {
         return objectiveRequirements;
+    }
+
+    public int getChallengeLevel() {
+        return challengeLevel;
     }
 }

@@ -99,6 +99,7 @@ public class RoomSelectorGuiHandler extends GuiHandler implements AutoRefresh {
                         .add("maxPlayers", room.getLevel().isAllowOverfull() ? "∞" : room.getLevel().getMaxPlayers())
                         .add("ticketCost", room.getLevel().getTicketCost())
                         .add("difficulty", room.getDifficulty())
+                        .add("challengeLevel", difficulty == Difficulty.CHALLENGE ? Integer.toString(room.getChallengeLevel()+1) : "")
                         .addTime("timeLeft", room.getTimeLeft());
 
                 if (history != null) {

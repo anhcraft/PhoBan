@@ -111,6 +111,14 @@ public class MainCommand extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Started " + room);
     }
 
+    @Subcommand("end")
+    @CommandPermission("phoban.end")
+    @CommandCompletion("@activeRoom")
+    public void end(CommandSender sender, String room) {
+        plugin.gameManager.tryEnd(room);
+        sender.sendMessage(ChatColor.GREEN + "Ended " + room);
+    }
+
     @Subcommand("terminate")
     @CommandPermission("phoban.terminate")
     @CommandCompletion("@activeRoom")

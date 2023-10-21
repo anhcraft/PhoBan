@@ -104,6 +104,7 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                 Placeholder placeholder = Placeholder.create()
                         .add("dungeon", roomConfig.getName())
                         .add("difficulty", difficulty)
+                        .add("challengeLevel", "")
                         .add("requiredRoom", roomConfig.getName())
                         .add("requiredDifficulty", Difficulty.values()[difficulty.ordinal()-1]);
                 replaceItem(slot, (index, itemBuilder) -> {
@@ -118,6 +119,8 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
             }
 
             GameHistory history = playerData.getGameHistory(roomId);
+            int challengeLevel = difficulty == Difficulty.CHALLENGE ? playerData.getChallengeLevel(roomId) : 0;
+
             Placeholder placeholder = Placeholder.create()
                     .add("dungeon", roomConfig.getName())
                     .addUnknown("playTimes")
@@ -126,6 +129,7 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
                     .addUnknown("winRatio")
                     .addUnknown("bestCompleteTime")
                     .add("difficulty", difficulty)
+                    .add("challengeLevel", difficulty == Difficulty.CHALLENGE ? Integer.toString(challengeLevel+1) : "")
                     .add("currentPlayers", 0)
                     .add("maxPlayers", levelConfig.isAllowOverfull() ? "∞" : levelConfig.getMaxPlayers())
                     .add("ticketCost", levelConfig.getTicketCost())
@@ -149,7 +153,7 @@ public class DifficultySelectorGuiHandler extends GuiHandler implements AutoRefr
             });
 
             getSlot(slot).setEvents((ClickEvent) (clickEvent, player1, slot1) -> {
-                PhoBan.instance.gameManager.attemptCreateRoom(player, roomId, difficulty);
+                PhoBan.instance.gameManager.attemptCreateRoom(player, roomId, difficulty, challengeLevel);
             });
         }
     }

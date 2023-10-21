@@ -55,6 +55,16 @@ public record MobSpawnRule(
         );
     }
 
+    public MobSpawnRule raiseLevel(int delta) {
+        if (getVanillaType() == null) {
+            return new MobSpawnRule(
+                    getMythicBoss().raiseLevel(delta).toString(),
+                    amount, location, delay, every, times, mobOptions
+            );
+        }
+        return this;
+    }
+
     @Nullable
     public EntityType getVanillaType() {
         return (EntityType) EnumUtil.findEnum(EntityType.class, type.toUpperCase());

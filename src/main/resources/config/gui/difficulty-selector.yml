@@ -31,7 +31,7 @@ components:
       - ""
       - "&eNhấn để mở shop mua vé Phó Bản"
 
-difficulty-name: "&a{dungeon} &7({difficulty}&7)"
+difficulty-name: "&a{dungeon} &7({difficulty} {challengeLevel}&7)"
 
 room-locked-trailer:
   - ""
@@ -44,7 +44,7 @@ room-lore-trailer:
   - "&eThông tin:"
   - "&7 ▪ Người chơi: &f{currentPlayers}/{maxPlayers}"
   - "&7 ▪ Trạng thái: {stage}"
-  - "&7 ▪ Độ khó: {difficulty}"
+  - "&7 ▪ Độ khó: {difficulty} {challengeLevel}"
   - ""
   - "&eLịch sử:"
   - "&7 ▪ Bạn đã chơi &f{playTimes}&7 lần"

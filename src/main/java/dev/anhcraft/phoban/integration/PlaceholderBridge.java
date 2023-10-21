@@ -14,6 +14,7 @@ public class PlaceholderBridge extends PlaceholderExpansion {
     private static final String ROOM_REGION = "room_region";
     private static final String ROOM_STAGE = "room_stage";
     private static final String ROOM_DIFFICULTY = "room_difficulty";
+    private static final String ROOM_CHALLENGE_LEVEL = "room_challenge_level";
     private static final String ROOM_PLAYERS = "room_players";
     private static final String ROOM_MAX_PLAYERS = "room_max_players";
     private static final String ROOM_MIN_PLAYERS = "room_min_players";
@@ -75,6 +76,10 @@ public class PlaceholderBridge extends PlaceholderExpansion {
             case ROOM_DIFFICULTY -> {
                 Room r = plugin.gameManager.getRoom(player.getUniqueId());
                 return r == null ? "" : plugin.messageConfig.difficulty.get(r.getDifficulty());
+            }
+            case ROOM_CHALLENGE_LEVEL -> {
+                Room r = plugin.gameManager.getRoom(player.getUniqueId());
+                return r == null ? "" : String.valueOf(r.getChallengeLevel());
             }
             case ROOM_PLAYERS -> {
                 Room r = plugin.gameManager.getRoom(player.getUniqueId());

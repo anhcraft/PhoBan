@@ -101,7 +101,7 @@ public class GameManager {
         return roomMap.get(player2room.get(player));
     }
 
-    public void attemptCreateRoom(Player player, String roomId, Difficulty difficulty) {
+    public void attemptCreateRoom(Player player, String roomId, Difficulty difficulty, int challengeLevel) {
         if (player2room.containsKey(player.getUniqueId())) {
             plugin.msg(player, plugin.messageConfig.alreadyJoined);
             return;
@@ -123,13 +123,13 @@ public class GameManager {
 
         // create here
         room = new Room(plugin, roomId, difficulty);
-        room.initialize();
+        room.initialize(challengeLevel);
 
         if(room.handleJoinRoom(player, false)) {
             player2room.put(player.getUniqueId(), roomId);
             roomMap.put(roomId, room);
             for (String s : room.getLevel().getObjectives().keySet()) {
-                boss2room.put(s, roomId);
+                boss2room.put(s.split(":")[0], roomId);
             }
             pd.setLastCreateRoomTime(System.currentTimeMillis());
         }
@@ -229,6 +229,13 @@ public class GameManager {
         Room r = roomMap.get(room);
         if (r != null) {
             r.forceStart();
+        }
+    }
+
+    public void tryEnd(String room) {
+        Room r = roomMap.get(room);
+        if (r != null) {
+            r.forceEnd();
         }
     }
 }
