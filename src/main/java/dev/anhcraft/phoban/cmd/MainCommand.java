@@ -5,8 +5,11 @@ import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import dev.anhcraft.phoban.PhoBan;
 import dev.anhcraft.phoban.config.RoomConfig;
+import dev.anhcraft.phoban.game.Difficulty;
 import dev.anhcraft.phoban.game.Room;
 import dev.anhcraft.phoban.gui.GuiRegistry;
+import dev.anhcraft.phoban.storage.GameHistory;
+import dev.anhcraft.phoban.util.TimeUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -15,6 +18,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.function.Consumer;
+
+import static org.bukkit.ChatColor.*;
 
 @CommandAlias("pb|phoban")
 public class MainCommand extends BaseCommand {
@@ -35,6 +42,67 @@ public class MainCommand extends BaseCommand {
         GuiRegistry.openRoomSelector(player);
     }
 
+    @Subcommand("profile")
+    @CommandPermission("phoban.profile")
+    @CommandCompletion("@players")
+    public void profile(CommandSender sender, OfflinePlayer player) {
+        if (!player.hasPlayedBefore()) {
+            sender.sendMessage(RED + "This player has not played before!");
+            return;
+        }
+        if (!player.isOnline())
+            sender.sendMessage(YELLOW + "Fetching player data as he is currently offline...");
+
+        plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
+            if (throwable != null) {
+                sender.sendMessage(RED + throwable.getMessage());
+                return;
+            }
+            sender.sendMessage(YELLOW+"This is the profile of "+WHITE+player.getName());
+            sender.sendMessage(GREEN+"- Available ticket: "+WHITE+playerData.getTicket());
+            playerData.streamPlayedRooms().forEach(room -> {
+                GameHistory history = playerData.requireRoomHistory(room);
+                sender.sendMessage(AQUA+"* Played room "+room);
+                for (Difficulty value : Difficulty.values()) {
+                    if (history.getPlayTimes(value) == 0) continue;
+                    String msg;
+                    if (value == Difficulty.CHALLENGE) {
+                         msg = String.format(
+                                "&7- %s %d:&7 &fWon %d, Lost %d, Total %d (Best: %s) (Win Ratio: %.2f%%)",
+                                plugin.messageConfig.difficulty.get(value),
+                                playerData.getChallengeLevel(room),
+                                history.getWinTimes(value),
+                                history.getLossTimes(value),
+                                history.getPlayTimes(value),
+                                TimeUtils.format(history.getBestCompleteTime(value)),
+                                 ((double) history.getWinTimes(value))/history.getPlayTimes(value)*100
+                        );
+                    } else {
+                        msg = String.format(
+                                "&7- %s:&7 &fWon %d, Lost %d, Total %d (Best: %s) (Win Ratio: %.2f%%)",
+                                plugin.messageConfig.difficulty.get(value),
+                                history.getWinTimes(value),
+                                history.getLossTimes(value),
+                                history.getPlayTimes(value),
+                                TimeUtils.format(history.getBestCompleteTime(value)),
+                                ((double) history.getWinTimes(value))/history.getPlayTimes(value)*100
+                        );
+                    }
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+                }
+                String msg = String.format(
+                                "&7> Total:&7 &fWon %d, Lost %d, Total %d (Best: %s) (Win Ratio: %.2f%%)",
+                                history.getTotalWinTimes(),
+                                history.getTotalLossTimes(),
+                                history.getTotalPlayTimes(),
+                                TimeUtils.format(history.getBestCompleteOfAllTime()),
+                                ((double) history.getTotalWinTimes())/history.getTotalPlayTimes()*100
+                );
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+            });
+        });
+    }
+
     @Subcommand("quit")
     public void quit(Player player) {
         plugin.gameManager.attemptLeaveRoom(player);
@@ -44,11 +112,11 @@ public class MainCommand extends BaseCommand {
     @CommandPermission("phoban.reload")
     public void reload(CommandSender sender) {
         if (!plugin.gameManager.getActiveRoomIds().isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "There are active rooms in playing!");
+            sender.sendMessage(RED + "There are active rooms in playing!");
             return;
         }
         plugin.reload();
-        sender.sendMessage(ChatColor.GREEN + "Reloaded the plugin!");
+        sender.sendMessage(GREEN + "Reloaded the plugin!");
     }
 
     @Subcommand("enable")
@@ -57,11 +125,11 @@ public class MainCommand extends BaseCommand {
     public void enable(CommandSender sender, String room) {
         RoomConfig rc = plugin.gameManager.getRoomConfig(room);
         if (rc == null) {
-            sender.sendMessage(ChatColor.RED + "Room not found: " + room);
+            sender.sendMessage(RED + "Room not found: " + room);
             return;
         }
         rc.setEnabled(true);
-        sender.sendMessage(ChatColor.GREEN + "Enabled " + room);
+        sender.sendMessage(GREEN + "Enabled " + room);
     }
 
     @Subcommand("disable")
@@ -70,18 +138,18 @@ public class MainCommand extends BaseCommand {
     public void disable(CommandSender sender, String room) {
         RoomConfig rc = plugin.gameManager.getRoomConfig(room);
         if (rc == null) {
-            sender.sendMessage(ChatColor.RED + "Room not found: " + room);
+            sender.sendMessage(RED + "Room not found: " + room);
             return;
         }
         rc.setEnabled(false);
-        sender.sendMessage(ChatColor.YELLOW + "Disabled " + room);
+        sender.sendMessage(YELLOW + "Disabled " + room);
     }
 
     @Subcommand("list")
     @CommandPermission("phoban.list")
     public void list(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "All: " + String.join(",", plugin.gameManager.getRoomIds()));
-        sender.sendMessage(ChatColor.GREEN + "Active: " + String.join(",", plugin.gameManager.getActiveRoomIds()));
+        sender.sendMessage(GOLD + "All: " + String.join(",", plugin.gameManager.getRoomIds()));
+        sender.sendMessage(GREEN + "Active: " + String.join(",", plugin.gameManager.getActiveRoomIds()));
     }
 
     @Subcommand("join")
@@ -92,12 +160,12 @@ public class MainCommand extends BaseCommand {
             if (sender instanceof Player)
                 target = (Player) sender;
             else {
-                sender.sendMessage(ChatColor.RED + "You must specify a player!");
+                sender.sendMessage(RED + "You must specify a player!");
                 return;
             }
         }
         if (plugin.gameManager.getRoom(room) == null) {
-            sender.sendMessage(ChatColor.RED + "Room not created: " + room);
+            sender.sendMessage(RED + "Room not created: " + room);
             return;
         }
         plugin.gameManager.attemptJoinRoom(target, room, true);
@@ -108,7 +176,7 @@ public class MainCommand extends BaseCommand {
     @CommandCompletion("@activeRoom")
     public void start(CommandSender sender, String room) {
         plugin.gameManager.tryStart(room);
-        sender.sendMessage(ChatColor.GREEN + "Started " + room);
+        sender.sendMessage(GREEN + "Started " + room);
     }
 
     @Subcommand("end")
@@ -116,7 +184,7 @@ public class MainCommand extends BaseCommand {
     @CommandCompletion("@activeRoom")
     public void end(CommandSender sender, String room) {
         plugin.gameManager.tryEnd(room);
-        sender.sendMessage(ChatColor.GREEN + "Ended " + room);
+        sender.sendMessage(GREEN + "Ended " + room);
     }
 
     @Subcommand("terminate")
@@ -124,7 +192,7 @@ public class MainCommand extends BaseCommand {
     @CommandCompletion("@activeRoom")
     public void terminate(CommandSender sender, String room) {
         plugin.gameManager.tryTerminate(room);
-        sender.sendMessage(ChatColor.GREEN + "Terminated " + room);
+        sender.sendMessage(GREEN + "Terminated " + room);
     }
 
     @Subcommand("reset respawn")
@@ -135,17 +203,17 @@ public class MainCommand extends BaseCommand {
             if (sender instanceof Player)
                 target = (Player) sender;
             else {
-                sender.sendMessage(ChatColor.RED + "You must specify a player!");
+                sender.sendMessage(RED + "You must specify a player!");
                 return;
             }
         }
         Room r = plugin.gameManager.getRoom(room);
         if (r == null) {
-            sender.sendMessage(ChatColor.RED + "Room not created: " + room);
+            sender.sendMessage(RED + "Room not created: " + room);
             return;
         }
         r.getRespawnChances().remove(target.getUniqueId());
-        sender.sendMessage(ChatColor.GREEN + "Reset respawn chances for " + target.getName());
+        sender.sendMessage(GREEN + "Reset respawn chances for " + target.getName());
     }
 
     @Subcommand("tp")
@@ -156,13 +224,13 @@ public class MainCommand extends BaseCommand {
             if (sender instanceof Player)
                 target = (Player) sender;
             else {
-                sender.sendMessage(ChatColor.RED + "You must specify a player!");
+                sender.sendMessage(RED + "You must specify a player!");
                 return;
             }
         }
         RoomConfig rc = plugin.gameManager.getRoomConfig(room);
         if (rc == null) {
-            sender.sendMessage(ChatColor.RED + "Room not found: " + room);
+            sender.sendMessage(RED + "Room not found: " + room);
             return;
         }
         target.teleport(rc.getSpawnLocation());
@@ -173,19 +241,19 @@ public class MainCommand extends BaseCommand {
     @CommandCompletion("@players")
     public void resetData(CommandSender sender, OfflinePlayer player) {
         if (!player.hasPlayedBefore()) {
-            sender.sendMessage(ChatColor.RED + "This player has not played before!");
+            sender.sendMessage(RED + "This player has not played before!");
             return;
         }
         if (!player.isOnline())
-            sender.sendMessage(ChatColor.YELLOW + "Fetching player data as he is currently offline...");
+            sender.sendMessage(YELLOW + "Fetching player data as he is currently offline...");
 
         plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
             if (throwable != null) {
-                sender.sendMessage(ChatColor.RED + throwable.getMessage());
+                sender.sendMessage(RED + throwable.getMessage());
                 return;
             }
             playerData.reset();
-            sender.sendMessage(ChatColor.GREEN + "Reset player data: " + player.getName());
+            sender.sendMessage(GREEN + "Reset player data: " + player.getName());
         });
     }
 
@@ -200,19 +268,19 @@ public class MainCommand extends BaseCommand {
     @CommandCompletion("@players")
     public void addTicket(CommandSender sender, OfflinePlayer player, int amount) {
         if (!player.hasPlayedBefore()) {
-            sender.sendMessage(ChatColor.RED + "This player has not played before!");
+            sender.sendMessage(RED + "This player has not played before!");
             return;
         }
         if (!player.isOnline())
-            sender.sendMessage(ChatColor.YELLOW + "Fetching player data as he is currently offline...");
+            sender.sendMessage(YELLOW + "Fetching player data as he is currently offline...");
 
         plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
             if (throwable != null) {
-                sender.sendMessage(ChatColor.RED + throwable.getMessage());
+                sender.sendMessage(RED + throwable.getMessage());
                 return;
             }
             playerData.addTicket(amount);
-            sender.sendMessage(ChatColor.GREEN + "Added " + amount + " tickets for " + player.getName());
+            sender.sendMessage(GREEN + "Added " + amount + " tickets for " + player.getName());
         });
     }
 
@@ -221,19 +289,19 @@ public class MainCommand extends BaseCommand {
     @CommandCompletion("@players")
     public void setTicket(CommandSender sender, OfflinePlayer player, int amount) {
         if (!player.hasPlayedBefore()) {
-            sender.sendMessage(ChatColor.RED + "This player has not played before!");
+            sender.sendMessage(RED + "This player has not played before!");
             return;
         }
         if (!player.isOnline())
-            sender.sendMessage(ChatColor.YELLOW + "Fetching player data as he is currently offline...");
+            sender.sendMessage(YELLOW + "Fetching player data as he is currently offline...");
 
         plugin.playerDataManager.requireData(player.getUniqueId()).whenComplete((playerData, throwable) -> {
             if (throwable != null) {
-                sender.sendMessage(ChatColor.RED + throwable.getMessage());
+                sender.sendMessage(RED + throwable.getMessage());
                 return;
             }
             playerData.setTicket(amount);
-            sender.sendMessage(ChatColor.GREEN + "Set " + amount + " tickets for " + player.getName());
+            sender.sendMessage(GREEN + "Set " + amount + " tickets for " + player.getName());
         });
     }
 

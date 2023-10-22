@@ -31,7 +31,7 @@ components:
       - ""
       - "&eNhấn để mở shop mua vé Phó Bản"
 
-difficulty-name: "&a{dungeon} &7({difficulty} {challengeLevel}&7)"
+difficulty-name: "&a{dungeon} &7| {difficulty} {challengeLevel}"
 
 room-locked-trailer:
   - ""

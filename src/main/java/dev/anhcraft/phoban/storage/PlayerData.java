@@ -33,8 +33,14 @@ public class PlayerData {
     private long lastFreeTicketTime;
     private long lastCreateRoomTime;
 
+    @NotNull
     public Stream<GameHistory> streamGameHistory() {
         return roomHistory.values().stream();
+    }
+
+    @NotNull
+    public Stream<String> streamPlayedRooms() {
+        return roomHistory.keySet().stream();
     }
 
     @Nullable
