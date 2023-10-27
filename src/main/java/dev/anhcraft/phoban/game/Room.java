@@ -347,7 +347,7 @@ public class Room {
             return true;
         }
 
-        if (stage != Stage.WAITING && !force) {
+        if (stage != Stage.WAITING && !force && !getLevel().isAllowLateJoin()) {
             plugin.msg(player, plugin.messageConfig.notInWaiting);
             return false;
         }

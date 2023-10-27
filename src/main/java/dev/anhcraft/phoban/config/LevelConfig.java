@@ -32,6 +32,8 @@ public class LevelConfig {
 
     private boolean allowOverfull;
 
+    private boolean allowLateJoin;
+
     private String[] joinMessages;
 
     @Optional
@@ -128,6 +130,10 @@ public class LevelConfig {
 
     public boolean isAllowOverfull() {
         return allowOverfull;
+    }
+
+    public boolean isAllowLateJoin() {
+        return allowLateJoin;
     }
 
     @Nullable
