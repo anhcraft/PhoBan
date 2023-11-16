@@ -32,7 +32,7 @@ import java.io.File;
 import java.io.IOException;
 
 public final class PhoBan extends JavaPlugin {
-    public static final GameMode SPECTATOR_GAMEMODE = GameMode.SURVIVAL;
+    public static final GameMode SPECTATOR_GAMEMODE = GameMode.SPECTATOR;
     public static PhoBan instance;
     public PlayerDataManager playerDataManager;
     public GameManager gameManager;
