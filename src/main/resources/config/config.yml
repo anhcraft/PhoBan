@@ -28,8 +28,6 @@ info-item-cmd: dm open shopphoban {player}
 allowed-commands:
   - heal
   - feed
-  - phoban
-  - pb
   - tell
   - r
   - w
