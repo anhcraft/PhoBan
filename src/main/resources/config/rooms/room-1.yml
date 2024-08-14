@@ -1,7 +1,7 @@
 # Có bật phòng này không? Nếu không, member sẽ không thể vào, trừ người có quyền phoban.admin
 # Dùng để setup, test phòng trong server chính
-# Mặc định là true
-#enabled: true
+# Mặc định là false
+enabled: false
 
 # Tên phòng chơi hiện tại
 name: "&aGod Skeleton"

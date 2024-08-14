@@ -46,7 +46,7 @@ public class MainCommand extends BaseCommand {
     @CommandPermission("phoban.profile")
     @CommandCompletion("@players")
     public void profile(CommandSender sender, OfflinePlayer player) {
-        if (!player.hasPlayedBefore()) {
+        if (!player.isOnline() && !player.hasPlayedBefore()) {
             sender.sendMessage(RED + "This player has not played before!");
             return;
         }
@@ -240,7 +240,7 @@ public class MainCommand extends BaseCommand {
     @CommandPermission("phoban.reset.data")
     @CommandCompletion("@players")
     public void resetData(CommandSender sender, OfflinePlayer player) {
-        if (!player.hasPlayedBefore()) {
+        if (!player.isOnline() && !player.hasPlayedBefore()) {
             sender.sendMessage(RED + "This player has not played before!");
             return;
         }
@@ -267,7 +267,7 @@ public class MainCommand extends BaseCommand {
     @CommandPermission("phoban.ticket.add")
     @CommandCompletion("@players")
     public void addTicket(CommandSender sender, OfflinePlayer player, int amount) {
-        if (!player.hasPlayedBefore()) {
+        if (!player.isOnline() && !player.hasPlayedBefore()) {
             sender.sendMessage(RED + "This player has not played before!");
             return;
         }
@@ -288,7 +288,7 @@ public class MainCommand extends BaseCommand {
     @CommandPermission("phoban.ticket.set")
     @CommandCompletion("@players")
     public void setTicket(CommandSender sender, OfflinePlayer player, int amount) {
-        if (!player.hasPlayedBefore()) {
+        if (!player.isOnline() && !player.hasPlayedBefore()) {
             sender.sendMessage(RED + "This player has not played before!");
             return;
         }
