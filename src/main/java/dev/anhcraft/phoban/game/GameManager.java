@@ -47,7 +47,7 @@ public class GameManager {
             dir.mkdirs();
 
             plugin.requestConfig("rooms/room-1.yml");
-            plugin.requestConfig("rooms/room-2.yml");
+            //plugin.requestConfig("rooms/room-2.yml");
         }
 
         List<PresentPair<String, RoomConfig>> roomConfigs = new ArrayList<>();
