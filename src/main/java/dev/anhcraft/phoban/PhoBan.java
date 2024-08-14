@@ -19,6 +19,7 @@ import dev.anhcraft.phoban.gui.GuiRefreshTask;
 import dev.anhcraft.phoban.gui.GuiRegistry;
 import dev.anhcraft.phoban.gui.RoomSelectorGui;
 import dev.anhcraft.phoban.storage.PlayerDataManager;
+import dev.anhcraft.phoban.tasks.FreeTicketTask;
 import dev.anhcraft.phoban.tasks.GameTickingTask;
 import dev.anhcraft.phoban.util.ConfigHelper;
 import net.md_5.bungee.api.ChatColor;
@@ -38,6 +39,7 @@ public final class PhoBan extends JavaPlugin {
     public GameManager gameManager;
     public MainConfig mainConfig;
     public MessageConfig messageConfig;
+    public FreeTicketTask freeTicketTask;
 
     @Override
     public void onEnable() {
@@ -119,6 +121,7 @@ public final class PhoBan extends JavaPlugin {
 
         new GuiRefreshTask().runTaskTimer(this, 0L, 20L);
         new GameTickingTask().runTaskTimerAsynchronously(this, 0L, 20L);
+        (freeTicketTask = new FreeTicketTask(this)).runTaskTimerAsynchronously(this, 0L, mainConfig.freeTicketEvery*20L);
     }
 
     public YamlConfiguration requestConfig(String path) {

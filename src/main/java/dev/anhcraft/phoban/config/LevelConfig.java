@@ -36,6 +36,8 @@ public class LevelConfig {
 
     private String[] joinMessages;
 
+    private String[] startMessages;
+
     @Optional
     private List<String> mobs = Collections.emptyList();
 
@@ -139,5 +141,10 @@ public class LevelConfig {
     @Nullable
     public String[] getJoinMessages() {
         return joinMessages;
+    }
+
+    @Nullable
+    public String[] getStartMessages() {
+        return startMessages;
     }
 }

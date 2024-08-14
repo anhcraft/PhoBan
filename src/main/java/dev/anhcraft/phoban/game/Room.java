@@ -212,8 +212,8 @@ public class Room {
                 if (p == null) continue;
                 plugin.playerDataManager.getData(p).requireRoomHistory(id).increasePlayTime(difficulty);
                 syncUpdatePlayerState(p).thenRun(() -> {
-                    if (getLevel().getJoinMessages() != null){
-                        for (String s : getLevel().getJoinMessages()) {
+                    if (getLevel().getStartMessages() != null){
+                        for (String s : getLevel().getStartMessages()) {
                             plugin.msg(p, s);
                         }
                     }
@@ -343,6 +343,16 @@ public class Room {
                         plugin.msg(player, s);
                     }
                 }
+
+                if (getStage() == Stage.PLAYING) {
+                    if (getLevel().getStartMessages() != null) {
+                        for (String s : getLevel().getStartMessages()) {
+                            plugin.msg(player, s);
+                        }
+                    }
+                    plugin.msg(player, plugin.messageConfig.gameStarted);
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
+                }
             });
             return true;
         }
@@ -377,7 +387,18 @@ public class Room {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 0.5f);
         }
 
-        syncUpdatePlayerState(player);
+        CompletableFuture<Void> sync = syncUpdatePlayerState(player);
+        if (getStage() == Stage.PLAYING) {
+            sync.thenRun(() -> {
+                if (getLevel().getStartMessages() != null) {
+                    for (String s : getLevel().getStartMessages()) {
+                        plugin.msg(player, s);
+                    }
+                }
+                plugin.msg(player, plugin.messageConfig.gameStarted);
+                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
+            });
+        }
 
         return true;
     }

@@ -5,6 +5,7 @@ layout:
   - "---------"
   - "----q---I"
 components:
+  # Xem config item: https://anhcraft.gitbook.io/vouchers/configuration/voucher-configuration/custom-item
   "-":
     material: black_stained_glass_pane
     name: "&a"

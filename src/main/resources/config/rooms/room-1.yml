@@ -1,35 +1,154 @@
+# Có bật phòng này không? Nếu không, member sẽ không thể vào, trừ người có quyền phoban.admin
+# Dùng để setup, test phòng trong server chính
+# Mặc định là true
+#enabled: true
+
+# Tên phòng chơi hiện tại
 name: "&aGod Skeleton"
+
+# Icon phòng chơi hiện tại
+# Danh sách: https://jd.papermc.io/paper/1.21.1/org/bukkit/Material.html
 icon: bone
+
+# Yêu cầu đã chơi phòng nào + độ khó tối thiểu
+# Dùng ID phòng (là tên file)
+# Ví dụ: "room-1" tương đương "room-1:easy" yêu cầu từ EASY trở lên
+# Ví dụ: "room-1:hard" yêu cầu từ HARD trở lên
+# Mặc định: không yêu cầu
+#requirement: "room-1:easy"
+
+# Khoá thời tiết (tuỳ chọn)
+# Giá trị: downfall hoặc clear
+#weather-lock: downfall
+
+# Khoá thời gian (tick) (tuỳ chọn)
+# https://minecraft.wiki/w/Daylight_cycle
+# Sáng: 2000, chiều muộn: 13000, đêm: 18000
+#time-lock: 13000
+
+# Thứ tự phòng chơi này trong menu
 display-order: 0
+
+# Mô tả phòng chơi
 description:
   - "&7God Skeleton là con boss cực mạnh."
-spawn-location: world 0 128 0
+
+# Vị trí spawn khi vào phòng (trạng thái đang chờ)
+# Dùng /pb getpos
 queue-location: world 0 128 0
+
+# Vị trí spawn khi vào phòng (trạng thái đang chơi), hoặc khi từ giai đoạn chờ sang bắt đầu
+# Dùng /pb getpos
+spawn-location: world 0 128 0
+
+# Tên region WorldGuard chứa toàn bộ map phòng chơi
 region: "room1"
-weather-lock: downfall
-time-lock: 13000
+
+# Các cấp độ
 levels:
+  # Giá trị: EASY, MEDIUM, HARD, EXTREME, CHALLENGE
   easy:
+    # Chi phí vào chơi (vé)
     ticket-cost: 1
-    min-players: 1
-    max-players: 5
+    # Thời gian chơi (giây)
+    # Không bao gồm thời gian chờ, thời gian sau khi trao giải cho đến khi kết thúc
     playing-time: 1800
+
+    # Số người tối thiểu
+    min-players: 1
+    # Số người tối đa
+    max-players: 5
+
+    # Thời gian chờ hồi sinh (giây)
     respawn-time: 10
+    # Cơ hội hồi sinh
     respawn-chances: 3
-    boss-id: "SkeletonKing"
+
+    # Danh sách mục tiêu (phải giết hết mới thắng)
+    # Cú pháp: <MyThicMob>:<Số lượng>
+    # Lưu ý: không thể ghi level Mob, do Mob có thể lên level sẽ làm hỏng bộ đếm :)
+    objectives:
+      "SkeletonKing": 1
+      #"SkeletalMinion": 3
+
+    # Nếu phòng chỉ có 1 con boss, có thể dùng tuỳ chọn này cho ngắn
+    # tương đương dùng objectives, có thể dùng cả 2 cũng không sao
+    #boss-id: "SkeletonKing"
+
+    # Nếu bật tuỳ chọn này, khi hết thời gian mà vẫn chưa giết xong tất cả mục tiêu thì vẫn tính thắng cuộc
+    #allow-timeout: false
+    # Nếu bật tuỳ chọn này, khi giết hết mục tiêu vẫn cho chơi tiếp cho đến khi hết thời gian mới tính thắng cuộc
+    #allow-overachieve: false
+    # Cho phép vượt số lượng người chơi tối đa
+    #allow-overfull: false
+    # Cho phép vào muộn (khi game đã bắt đầu)
+    #allow-late-join: false
+    # Gửi tin nhắn khi vào
+    join-messages:
+      - "&aChúc bạn săn BOSS vui vẻ!"
+    # Gửi tin nhắn khi bắt đầu
+    start-messages:
+      - "&aGame Bắt Đầu!"
+
+    # Các mob để troll người chơi (giết không được gì)
+    # Spawn tại vị trí chỉ định: <entity> <location> [options...]
+    # Spawn tại mỗi người chơi trong phòng: <entity> [options...]
+    # Entity:
+    #   Theo mob vanilla: https://jd.papermc.io/paper/1.21.1/org/bukkit/entity/EntityType.html
+    #   Theo MyThicMob: <id> (level 1) hoặc <id>:<level> ví dụ SuperMonster:1
+    # Location: dùng /pb getpos
+    # @delay=<số>: thời gian delay trước khi spawn lần đầu (giây), mặc định: 0
+    # @every=<số>: spawn mỗi khoảng thời gian (giây), mặc định: chỉ spawn 1 lần
+    # @times=<số>: số lần spawn tối đa (giây), mặc định: không giới hạn
+    # @amount=<số>: số lượng spawn 1 đợt, mặc định: 1
+    # Nếu @every > 0 thì mới lặp lại, = 0 (hoặc không ghi) thì chỉ spawn 1 lần
+    #
+    # [!!!] Nếu dùng mob Vanilla thì có thể thêm các tuỳ chọn sau
+    # @health=<số>
+    # @followRange=<số>
+    # @knockbackResistance=<số>
+    # @movementSpeed=<số>
+    # @flyingSpeed=<số>
+    # @attackDamage=<số>
+    # @attackKnockback=<số>
+    # @attackSpeed=<số>
+    # @armor=<số>
+    # @armorToughness=<số>
+    # @silent: nếu có ghi thì mob sẽ bị câm (không phát âm thanh)
+    # @glowing: nếu có ghi thì mob sẽ phát sáng
     mobs:
       - zombie @amount=3 @every=10 @delay=3
       - zombie world 0 128 0 @amount=5
       - SkeletonKing world 0 128 0 @delay=10
       - SkeletalMinion world 0 128 0 @delay=10
+
+    # Âm thanh khi chơi
+    # Dùng /pb sound để test thử âm thanh
+    # Spawn tại vị trí chỉ định: <sound> <location> [options...]
+    # Spawn tại mỗi người chơi trong phòng: <sound> [options...]
+    # Sound: https://jd.papermc.io/paper/1.21.1/org/bukkit/Sound.html hoặc tên sound trong resource-pack
+    # @delay=<số>: thời gian delay trước khi play lần đầu (giây), mặc định: 0
+    # @every=<số>: play mỗi khoảng thời gian (giây), mặc định: chỉ play 1 lần
+    # @times=<số>: số lần play tối đa (giây), mặc định: không giới hạn
+    # @volume=<số>
+    # @pitch=<số>
     sounds:
       - ambient.basalt_deltas.loop @every=200 @delay=20
+
+    # Nếu phòng chơi chiến thắng, toàn bộ người tham gia, mỗi người sẽ nhận quà sau:
     win-rewards:
       - eco give {player} 10000
+
+    # Nếu phòng chơi chiến thắng, những người thắng lần đầu, mỗi người sẽ nhận quà sau:
+    # Ví dụ: vượt ải Dễ tính 1 lần, vướt ải Trung bình tính 1 lần, vvv
     first-win-rewards:
       - eco give {player} 20000
+
+    # Người giết Boss cuối cùng sẽ nhận quà sau:
+    # Ví dụ có nhiều boss mà nhiều người giết khác nhau cũng sẽ chạy
     boss-kill-rewards:
       - eco give {player} 20000
+
   medium:
     ticket-cost: 1
     min-players: 1
@@ -37,7 +156,7 @@ levels:
     playing-time: 1400
     respawn-time: 10
     respawn-chances: 2
-    boss-id: "SkeletonKing"
+    objectives: {"SkeletonKing": 1, "SkeletalMinion": 3}
     mobs:
       - zombie @amount=3 @every=10 @delay=3
       - zombie world 0 128 0 @amount=10
@@ -52,19 +171,57 @@ levels:
   hard:
     ticket-cost: 2
     min-players: 2
-    max-players: 3
+    max-players: 4
     playing-time: 1200
     respawn-time: 20
     respawn-chances: 1
-    boss-id: "SkeletonKing"
+    objectives: {"SkeletonKing": 1, "SkeletalMinion": 3}
     mobs:
       - zombie @amount=3 @every=10 @delay=3
       - zombie world 0 128 0 @amount=15
       - SkeletonKing:2 world 0 128 0 @delay=10
-      - SkeletalMinion:2 world 0 128 0 @delay=10
+      - SkeletalMinion:2 world 0 128 0 @delay=10 @times=3 @every=10
     win-rewards:
       - eco give {player} 30000
     first-win-rewards:
       - eco give {player} 20000
     boss-kill-rewards:
       - eco give {player} 70000
+  extreme:
+    ticket-cost: 3
+    min-players: 2
+    max-players: 4
+    playing-time: 1500
+    respawn-time: 30
+    respawn-chances: 1
+    objectives: {"SkeletonKing": 2, "SkeletalMinion": 5}
+    mobs:
+      - zombie @amount=3 @every=10 @delay=3
+      - zombie world 0 128 0 @amount=15
+      - SkeletonKing:3 world 0 128 0 @delay=10 @times=2 @every=10
+      - SkeletalMinion:3 world 0 128 0 @delay=10 @times=5 @every=10
+    win-rewards:
+      - eco give {player} 40000
+    first-win-rewards:
+      - eco give {player} 30000
+    boss-kill-rewards:
+      - eco give {player} 120000
+  challenge:
+    ticket-cost: 4
+    min-players: 2
+    max-players: 3
+    playing-time: 2000
+    respawn-time: 30
+    respawn-chances: 1
+    objectives: {"SkeletonKing": 2, "SkeletalMinion": 10}
+    mobs:
+      - zombie @amount=3 @every=10 @delay=3
+      - zombie world 0 128 0 @amount=15
+      - SkeletonKing:4 world 0 128 0 @delay=10 @times=2 @every=10
+      - SkeletalMinion:4 world 0 128 0 @delay=10 @times=20 @every=10
+    win-rewards:
+      - eco give {player} 70000
+    first-win-rewards:
+      - eco give {player} 50000
+    boss-kill-rewards:
+      - eco give {player} 200000

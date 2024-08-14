@@ -1,17 +1,35 @@
+# Tặng vé Phó Bản miễn phí
 free-ticket:
   enabled: false
+  # Số lượng
   amount: 5
+  # Thời gian (theo giây)
   every: 86400
+
+# Thiết lập chung cho tất cả phòng
 room-settings:
+  # Thời gian chờ trước khi bắt đầu (theo giây)
   waiting-time: 15
+
+  # Sau khi trao giải, chờ bao lâu trước khi kết thúc phòng (theo giây)
   intermission-time: 20
+
+# Giới hạn thời gian một người chơi có thể tạo phòng (theo giây)
 room-create-cooldown: 240
+
+# Vị trí spawn của server
+# Dùng /pb getpos
 spawn-location: world 0 128 0
+
+# Chạy lệnh khi nhấn vào item "Thông tin" trong GUi
 info-item-cmd: dm open shopphoban {player}
+
+# Các lệnh được dùng trong phòng chơi
 allowed-commands:
   - heal
   - feed
   - phoban
+  - pb
   - tell
   - r
   - w
@@ -20,4 +38,6 @@ allowed-commands:
   - fix
   - discord
   - skill
+
+# Cấp độ debyg, từ 0-2
 debug-level: 0
